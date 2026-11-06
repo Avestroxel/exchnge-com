@@ -1,0 +1,178 @@
+{
+  "entities": {
+    "AppUser": {
+      "title": "AppUser",
+      "description": "Office staff user details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string" },
+        "password": { "type": "string" },
+        "avatar": { "type": "string" },
+        "isOnline": { "type": "boolean" },
+        "lastActiveAt": { "type": "string" },
+        "salary": { "type": "number" },
+        "salaryCurrency": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Customer": {
+      "title": "Customer",
+      "description": "Customer account details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "password": { "type": "string" },
+        "balances": { "type": "object" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "name", "phone", "balances", "createdAt"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "A single financial transaction or safe adjustment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "type": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "performedBy": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "rate": { "type": "number" },
+        "targetAmount": { "type": "number" },
+        "targetCurrency": { "type": "string" },
+        "profitInIQD": { "type": "number" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "type", "timestamp", "performedBy", "amount", "currency"]
+    },
+    "FastTransferDetails": {
+      "title": "FastTransferDetails",
+      "description": "Fast currency transfer from cash to cash",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "receiverName": { "type": "string" },
+        "receiverPhone": { "type": "string" },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "fee": { "type": "number" },
+        "status": { "type": "string" },
+        "notes": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "deliveredAt": { "type": "string" }
+      },
+      "required": ["id", "senderId", "senderName", "receiverName", "receiverPhone", "amount", "currency", "fee", "status", "createdAt"]
+    },
+    "StandardTransferDetails": {
+      "title": "StandardTransferDetails",
+      "description": "Standard hawala currency transfer with spread rate calculations",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "receiverId": { "type": "string" },
+        "receiverName": { "type": "string" },
+        "beneficiaryName": { "type": "string" },
+        "deliveryLocation": { "type": "string" },
+        "amountUSD": { "type": "number" },
+        "buyRate": { "type": "number" },
+        "sellRate": { "type": "number" },
+        "senderIQDAdded": { "type": "number" },
+        "receiverIQDDeducted": { "type": "number" },
+        "profitIQD": { "type": "number" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "senderId", "senderName", "receiverId", "receiverName", "beneficiaryName", "deliveryLocation", "amountUSD", "buyRate", "sellRate", "senderIQDAdded", "receiverIQDDeducted", "profitIQD", "status", "createdAt"]
+    },
+    "SystemSettings": {
+      "title": "SystemSettings",
+      "description": "Office and theme branding settings",
+      "type": "object",
+      "properties": {
+        "officeName": { "type": "string" },
+        "themeColor": { "type": "string" },
+        "defaultCurrency": { "type": "string" },
+        "fontSize": { "type": "string" },
+        "language": { "type": "string" }
+      },
+      "required": ["officeName", "themeColor", "defaultCurrency", "fontSize", "language"]
+    },
+    "CurrencyState": {
+      "title": "CurrencyState",
+      "description": "Tracks active currencies list and safe physical balance state",
+      "type": "object",
+      "properties": {
+        "currencies": { "type": "array" },
+        "safeBalances": { "type": "object" }
+      },
+      "required": ["currencies", "safeBalances"]
+    },
+    "DeletedRecord": {
+      "title": "DeletedRecord",
+      "description": "Audit log for deleted records across the application",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "category": { "type": "string" },
+        "originalId": { "type": "string" },
+        "title": { "type": "string" },
+        "deletedAt": { "type": "string" },
+        "deletedBy": { "type": "string" },
+        "currency": { "type": "string" },
+        "amount": { "type": "number" },
+        "notes": { "type": "string" },
+        "details": { "type": "object" }
+      },
+      "required": ["id", "category", "originalId", "title", "deletedAt", "deletedBy", "details"]
+    }
+  },
+  "firestore": {
+    "/settings/config": {
+      "schema": "SystemSettings",
+      "description": "Unified system configuration"
+    },
+    "/currencies/state": {
+      "schema": "CurrencyState",
+      "description": "Physical registers of active currencies & ledger"
+    },
+    "/users/{userId}": {
+      "schema": "AppUser",
+      "description": "Users registry"
+    },
+    "/customers/{customerId}": {
+      "schema": "Customer",
+      "description": "Customers list and direct ledger accounts"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Financial operation audits"
+    },
+    "/fastTransfers/{transferId}": {
+      "schema": "FastTransferDetails",
+      "description": "Immediate cash withdrawals transfers"
+    },
+    "/standardTransfers/{transferId}": {
+      "schema": "StandardTransferDetails",
+      "description": "Standard spread brokers settlements"
+    },
+    "/deletedRecords/{recordId}": {
+      "schema": "DeletedRecord",
+      "description": "Log of deleted transactions and records"
+    }
+  }
+}

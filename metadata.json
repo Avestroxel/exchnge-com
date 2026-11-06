@@ -1,0 +1,8 @@
+{
+  "name": "Remix Money Transfer Accounting System Anas",
+  "description": "An internal Kurdish Hawala and Exchange ledger book with safe deposits, fast transfers, standard spread-based transfers, and role separation.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

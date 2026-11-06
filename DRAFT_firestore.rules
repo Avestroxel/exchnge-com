@@ -1,0 +1,144 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Catch-all deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidSettings(data) {
+      return data.officeName is string && data.officeName.size() <= 200
+        && data.themeColor is string && data.themeColor.size() <= 50
+        && data.defaultCurrency is string && data.defaultCurrency.size() <= 20
+        && data.fontSize is string && data.fontSize.size() <= 20
+        && data.language is string && data.language.size() <= 10
+        && (!data.keys().hasAll(['themeMode']) || (data.themeMode is string && data.themeMode.size() <= 50))
+        && (!data.keys().hasAll(['officeLogo']) || (data.officeLogo is string))
+        && (!data.keys().hasAll(['locations']) || (data.locations is list));
+    }
+
+    function isValidCurrencyState(data) {
+      return data.currencies is list
+        && data.safeBalances is map;
+    }
+
+    function isValidUser(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() <= 256
+        && data.email is string && data.email.size() <= 256
+        && data.role is string && data.role.size() <= 128;
+    }
+
+    function isValidCustomer(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.name is string && data.name.size() <= 256
+        && data.phone is string && data.phone.size() <= 128
+        && data.balances is map
+        && data.createdAt is string && data.createdAt.size() <= 128;
+    }
+
+    function isValidTransaction(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.type is string && data.type.size() <= 128
+        && data.timestamp is string && data.timestamp.size() <= 128
+        && data.performedBy is string && data.performedBy.size() <= 256
+        && data.amount is number
+        && data.currency is string && data.currency.size() <= 50;
+    }
+
+    function isValidFastTransfer(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.senderId is string && data.senderId.size() <= 128
+        && data.senderName is string && data.senderName.size() <= 256
+        && data.receiverName is string && data.receiverName.size() <= 256
+        && data.receiverPhone is string && data.receiverPhone.size() <= 128
+        && data.amount is number
+        && data.currency is string && data.currency.size() <= 50
+        && data.fee is number
+        && data.status is string && data.status.size() <= 50
+        && data.createdAt is string && data.createdAt.size() <= 128;
+    }
+
+    function isValidStandardTransfer(data) {
+      return data.id is string && data.id.size() <= 128
+        && data.senderId is string && data.senderId.size() <= 128
+        && data.senderName is string && data.senderName.size() <= 256
+        && data.receiverId is string && data.receiverId.size() <= 128
+        && data.receiverName is string && data.receiverName.size() <= 256
+        && data.beneficiaryName is string && data.beneficiaryName.size() <= 256
+        && data.deliveryLocation is string && data.deliveryLocation.size() <= 256
+        && data.amountUSD is number
+        && data.buyRate is number
+        && data.sellRate is number
+        && data.senderIQDAdded is number
+        && data.receiverIQDDeducted is number
+        && data.profitIQD is number
+        && data.status is string && data.status.size() <= 50
+        && data.createdAt is string && data.createdAt.size() <= 128;
+    }
+
+    // Unified configurations
+    match /settings/config {
+      allow read: if true;
+      allow write: if isValidSettings(incoming());
+    }
+
+    // Physical registers of currencies / safe
+    match /currencies/state {
+      allow read: if true;
+      allow write: if isValidCurrencyState(incoming());
+    }
+
+    // Connection verification
+    match /test/{testId} {
+      allow read: if true;
+    }
+
+    // Users (staff) records
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if isValidId(userId) && isValidUser(incoming());
+      allow delete: if true;
+    }
+
+    // Customers directory
+    match /customers/{customerId} {
+      allow read: if true;
+      allow create, update: if isValidId(customerId) && isValidCustomer(incoming());
+      allow delete: if true;
+    }
+
+    // Detailed double-entry logs of transaction executions
+    match /transactions/{transactionId} {
+      allow read: if true;
+      allow create, update: if isValidId(transactionId) && isValidTransaction(incoming());
+      allow delete: if true;
+    }
+
+    // Instant/Fast currency cash حەواڵە
+    match /fastTransfers/{transferId} {
+      allow read: if true;
+      allow create, update: if isValidId(transferId) && isValidFastTransfer(incoming());
+      allow delete: if true;
+    }
+
+    // Standard broker spread ledger accounts
+    match /standardTransfers/{transferId} {
+      allow read: if true;
+      allow create, update: if isValidId(transferId) && isValidStandardTransfer(incoming());
+      allow delete: if true;
+    }
+  }
+}
