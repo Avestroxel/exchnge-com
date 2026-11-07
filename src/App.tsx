@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import gsap from 'gsap';
 import { Menu, Loader2, Database, Coins, Sparkles, Globe, Sun, Moon } from 'lucide-react';
 import { translations } from './data/translations';
 import { 
@@ -31,6 +32,7 @@ import ConfirmModal from './components/ConfirmModal';
 
 // View Imports
 import RightSidebar, { SidebarTab } from './components/RightSidebar';
+import AppLoader from './components/AppLoader';
 import LoginView from './components/LoginView';
 import DashboardView from './components/DashboardView';
 import UniversalEntryView from './components/UniversalEntryView';
@@ -78,6 +80,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<SidebarTab>('dashboard');
   const [settingsSection, setSettingsSection] = useState<'all' | 'general' | 'currencies' | 'employees' | 'data'>('all');
   const [isLoadingFirebase, setIsLoadingFirebase] = useState(true);
+  const [showStartupLoader, setShowStartupLoader] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [txToDelete, setTxToDelete] = useState<string | null>(null);
   
@@ -131,6 +134,70 @@ export default function App() {
     setUserThemeColor(savedColor as any);
     setUserFontSize(savedFontSize as any);
   }, [appState.currentUser?.id]);
+
+  const viewContainerRef = useRef<HTMLDivElement>(null);
+
+  // Silky Multi-Layered GSAP Entrance Choreography (On Section / Tab Switch)
+  useLayoutEffect(() => {
+    if (!viewContainerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        defaults: { force3D: true, ease: 'expo.out' }
+      });
+
+      // Stage 1: Section Header & Top Action Bar glide in
+      tl.fromTo(
+        '[data-animate="header"], header, .view-header',
+        { opacity: 0, y: -14 },
+        { opacity: 1, y: 0, duration: 0.4, clearProps: 'transform' },
+        0
+      );
+
+      // Stage 2: Main Cards, Widgets & Panels cascade in with soft spring physics
+      tl.fromTo(
+        '[data-animate="card"], .bento-card, .glass-card, .stat-card',
+        {
+          opacity: 0,
+          y: 28,
+          scale: 0.95,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.52,
+          stagger: {
+            each: 0.045,
+            from: 'start',
+          },
+          ease: 'back.out(1.25)',
+          clearProps: 'transform',
+        },
+        0.04
+      );
+
+      // Stage 3: Table Rows, List Items & Form Fields ripple in smoothly
+      tl.fromTo(
+        'tbody tr, [data-animate="row"], .list-item-row',
+        {
+          opacity: 0,
+          y: 12,
+        },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.38,
+          stagger: 0.02,
+          ease: 'power3.out',
+          clearProps: 'transform',
+        },
+        0.1
+      );
+    }, viewContainerRef);
+
+    return () => ctx.revert();
+  }, [activeTab, appState.currentUser?.id]);
 
   const handleUpdateThemeMode = (mode: 'light' | 'dark' | 'midnight' | 'sepia' | 'navy' | 'sky_light' | 'soft_cream') => {
     const normalizedMode = mode === 'light' ? 'sky_light' : mode === 'dark' ? 'midnight' : mode;
@@ -664,76 +731,32 @@ export default function App() {
     sessionStorage.removeItem('hawala_session_role');
   };
 
-  if (isLoadingFirebase) {
+  if (isLoadingFirebase && !showStartupLoader) {
     return (
-      <div 
-        className="min-h-screen flex flex-col items-center justify-center select-none overflow-hidden relative transition-colors duration-500"
-        style={{
-          backgroundColor: 'var(--bg-app)',
-          color: 'var(--text-main)'
-        }}
-      >
-        <style>{`
-          @keyframes pulse-ring {
-            0% { transform: scale(0.85); opacity: 0.25; }
-            50% { transform: scale(1.15); opacity: 0.65; }
-            100% { transform: scale(0.85); opacity: 0.25; }
-          }
-          @keyframes pulse-glow {
-            0% { transform: scale(0.9); opacity: 0.2; filter: blur(50px); }
-            50% { transform: scale(1.1); opacity: 0.45; filter: blur(70px); }
-            100% { transform: scale(0.9); opacity: 0.2; filter: blur(50px); }
-          }
-          .animate-pulse-ring {
-            animation: pulse-ring 2.8s infinite ease-in-out;
-          }
-          .animate-pulse-glow {
-            animation: pulse-glow 3.2s infinite ease-in-out;
-          }
-        `}</style>
-        
-        <div className="relative flex flex-col items-center justify-center gap-6 z-10">
-          <div className="relative flex items-center justify-center">
-            {/* Outermost pulsing ring */}
-            <div 
-              className="w-28 h-28 rounded-full border animate-pulse-ring absolute transition-colors duration-300"
-              style={{ borderColor: 'var(--theme-primary, #2563eb)' }}
-            />
-            
-            {/* Rotating sleek track */}
-            <div 
-              className="w-20 h-20 rounded-full border-[3px] animate-spin transition-colors duration-300" 
-              style={{ 
-                animationDuration: '1.2s',
-                borderColor: 'var(--border-color-dark, rgba(150,150,150,0.2))',
-                borderTopColor: 'var(--theme-primary, #2563eb)'
-              }} 
-            />
-            
-            {/* Centered minimalist coin icon box */}
-            <div 
-              className="w-12 h-12 rounded-full border flex items-center justify-center absolute transition-colors duration-300"
-              style={{
-                backgroundColor: 'var(--bg-card)',
-                borderColor: 'var(--border-color-dark)'
-              }}
-            >
-              <Coins className="w-5 h-5 animate-pulse transition-colors duration-300" style={{ color: 'var(--theme-primary, #2563eb)' }} />
-            </div>
-          </div>
-        </div>
+      <div className="min-h-screen flex flex-col items-center justify-center select-none overflow-hidden relative bg-[#05070B]">
+        <div className="w-10 h-10 border-2 border-[#1D7AFC] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!appState.currentUser || !appState.currentSessionRole) {
     return (
-      <LoginView 
-        appState={appStateWithLocalLang} 
-        onLoginSuccess={handleLogin} 
-        onLocalLangChange={handleLocalLangChange}
-        onThemeModeChange={handleUpdateThemeMode}
-      />
+      <>
+        {showStartupLoader && (
+          <AppLoader 
+            systemTitle={appStateWithLocalLang.settings.officeName}
+            officeLogo={appStateWithLocalLang.settings.officeLogo}
+            lang={localLang}
+            onFinish={() => setShowStartupLoader(false)}
+          />
+        )}
+        <LoginView 
+          appState={appStateWithLocalLang} 
+          onLoginSuccess={handleLogin} 
+          onLocalLangChange={handleLocalLangChange}
+          onThemeModeChange={handleUpdateThemeMode}
+        />
+      </>
     );
   }
 
@@ -1443,21 +1466,21 @@ export default function App() {
   return (
     <div className="flex flex-col h-screen overflow-hidden text-slate-100 select-none w-full relative" dir={localLang === 'en' ? 'ltr' : 'rtl'}>
       {/* Fallback ambient glowing orbs */}
-      <div className="fixed inset-0 -z-30 pointer-events-none select-none overflow-hidden">
-        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/30 rounded-full blur-[140px]" />
-        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-cyan-600/25 rounded-full blur-[140px]" />
-        <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-amber-600/25 rounded-full blur-[140px]" />
+      <div className="fixed inset-0 -z-30 pointer-events-none select-none overflow-hidden transform-gpu">
+        <div className="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/30 rounded-full blur-[140px] pointer-events-none transform-gpu" />
+        <div className="absolute top-1/3 -right-40 w-96 h-96 bg-cyan-600/25 rounded-full blur-[140px] pointer-events-none transform-gpu" />
+        <div className="absolute -bottom-40 left-1/3 w-96 h-96 bg-amber-600/25 rounded-full blur-[140px] pointer-events-none transform-gpu" />
       </div>
 
       {/* Full-Bleed Ambient Background Image */}
       <img 
         src="/assets/aistudio/pexels-steve-34062650_8633e506.jpg" 
         alt="Ambient background"
-        className="fixed inset-0 w-full h-full object-cover object-center -z-20 pointer-events-none select-none" 
+        className="fixed inset-0 w-full h-full object-cover object-center -z-20 pointer-events-none select-none transform-gpu" 
       />
 
       {/* Subtle Dark Contrast Overlay */}
-      <div className="fixed inset-0 bg-[#05070B]/35 -z-10 pointer-events-none" />
+      <div className="fixed inset-0 bg-[#05070B]/35 -z-10 pointer-events-none transform-gpu" />
 
       {/* Mobile Top Header */}
       <header className="md:hidden bg-slate-950/50 backdrop-blur-xl border-b border-white/[0.1] px-5 py-3.5 flex items-center justify-between no-print sticky top-0 z-20 shrink-0">
@@ -1548,7 +1571,8 @@ export default function App() {
 
         {/* Main content body panel */}
         <main 
-          className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth p-3 md:p-6 space-y-6"
+          ref={viewContainerRef}
+          className="flex-1 overflow-y-auto overflow-x-hidden scroll-smooth p-3 md:p-6 space-y-6 transform-gpu"
           style={{ WebkitOverflowScrolling: 'touch' }}
         >
           {renderMainContent()}
@@ -1591,6 +1615,15 @@ export default function App() {
         }}
         onCancel={() => setTxToDelete(null)}
       />
+
+      {showStartupLoader && (
+        <AppLoader 
+          systemTitle={appStateWithLocalLang.settings.officeName}
+          officeLogo={appStateWithLocalLang.settings.officeLogo}
+          lang={localLang}
+          onFinish={() => setShowStartupLoader(false)}
+        />
+      )}
     </div>
   );
 }

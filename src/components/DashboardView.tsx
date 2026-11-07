@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { 
   Clock, Calendar, Filter, RotateCcw, 
   ArrowDownRight, ArrowUpRight, ArrowLeftRight, Send, Vault, PlusCircle,
-  Printer
+  Printer, Activity, ShieldCheck
 } from 'lucide-react';
 import { Currency } from '../types';
 import { AppState } from '../data/stateManager';
@@ -178,76 +178,82 @@ export default function DashboardView({
     return filteredUserTransactions.slice(startIndex, endIndex);
   }, [filteredUserTransactions, activePage, itemsPerPage]);
 
+  const usdSafeBal = safeBalances['USD'] || 0;
+  const usdLiabilities = totalCustomerDeposits['USD'] || 0;
+  const usdEquity = usdSafeBal - usdLiabilities;
+
+  const iqdSafeBal = safeBalances['IQD'] || 0;
+  const iqdLiabilities = totalCustomerDeposits['IQD'] || 0;
+  const iqdEquity = iqdSafeBal - iqdLiabilities;
+
+  const otherActiveCurrencies = useMemo(() => {
+    return activeCurrencies.filter(cur => cur !== 'USD' && cur !== 'IQD');
+  }, [activeCurrencies]);
+
   return (
     <div className={`space-y-6 ${lang === 'en' ? 'text-left' : 'text-right'}`}>
-      {/* 1. Bento Header: Welcome & Quick Launchpad */}
-      <GlassCard className="p-0" contentClassName="p-5 sm:p-6">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]" />
-              <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
-                {currentSessionRole} · {startDate}
-              </span>
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight mt-1">
-              {lang === 'en' 
-                ? `Welcome back, ${currentUser?.name || 'Guest'}` 
-                : lang === 'ar' 
-                  ? `مرحباً بك، ${currentUser?.name || 'ضيف'}` 
-                  : `سڵاو لە بەڕێزتان، ${currentUser?.name || 'میوان'}`}
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl">
-              {lang === 'en' 
-                ? 'Cirrel Refractive Hawala & Exchange real-time financial control hub.' 
-                : lang === 'ar' 
-                  ? 'مركز العمليات المالي والمحاسبي المباشر لحسابات الصرافة والحوالات.' 
-                  : 'ناوەندی کۆنتڕۆڵ و ووردبینی دارایی ڕاستەوخۆی نووسینگەی ئاڵوگۆڕ و حەواڵە.'}
-            </p>
+      {/* 1. Bento Header: Clean Open Flex Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-2 view-header" data-animate="header">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_8px_#34d399]"></span>
+            </span>
+            <span className="text-xs font-mono uppercase tracking-wider text-slate-400">
+              {currentSessionRole} · {startDate} · {lang === 'en' ? 'Real-time financial control hub' : lang === 'ar' ? 'مركز العمليات المالي المباشر' : 'ناوەندی کۆنتڕۆڵی دارایی ڕاستەوخۆ'}
+            </span>
           </div>
-
-          {/* Quick Action Buttons Pill Bar */}
-          {!isCustomer && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <button
-                type="button"
-                onClick={() => onQuickAction('deposit')}
-                className="flex items-center gap-2 bg-[#1D7AFC] hover:bg-blue-500 text-white font-medium shadow-[0_4px_20px_rgba(29,122,252,0.4),inset_0_1px_0_rgba(255,255,255,0.3)] rounded-full px-4 py-2 text-xs transition-all cursor-pointer active:scale-95"
-              >
-                <PlusCircle className="w-3.5 h-3.5" />
-                <span>{lang === 'en' ? 'Deposit' : lang === 'ar' ? 'إيداع' : 'پارە دانان'}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onQuickAction('withdrawal')}
-                className="flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-slate-200 hover:text-white rounded-full px-4 py-2 text-xs backdrop-blur-md transition-all cursor-pointer active:scale-95"
-              >
-                <ArrowDownRight className="w-3.5 h-3.5 text-rose-400" />
-                <span>{lang === 'en' ? 'Withdrawal' : lang === 'ar' ? 'سحب' : 'ڕاکێشان'}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onQuickAction('exchange')}
-                className="flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-slate-200 hover:text-white rounded-full px-4 py-2 text-xs backdrop-blur-md transition-all cursor-pointer active:scale-95"
-              >
-                <ArrowLeftRight className="w-3.5 h-3.5 text-cyan-400" />
-                <span>{lang === 'en' ? 'Exchange' : lang === 'ar' ? 'صرافة' : 'ئاڵوگۆڕ'}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onQuickAction('transfer')}
-                className="flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-slate-200 hover:text-white rounded-full px-4 py-2 text-xs backdrop-blur-md transition-all cursor-pointer active:scale-95"
-              >
-                <Send className="w-3.5 h-3.5 text-amber-400" />
-                <span>{lang === 'en' ? 'Hawala' : lang === 'ar' ? 'حوالة' : 'حەواڵە'}</span>
-              </button>
-            </div>
-          )}
+          <h2 className="text-2xl font-bold text-white tracking-tight mt-1">
+            {lang === 'en' 
+              ? `Welcome back, ${currentUser?.name || 'Guest'}` 
+              : lang === 'ar' 
+                ? `مرحباً بك، ${currentUser?.name || 'ضيف'}` 
+                : `سڵاو لە بەڕێزتان، ${currentUser?.name || 'میوان'}`}
+          </h2>
         </div>
-      </GlassCard>
+
+        {/* Quick Action Buttons Pill Bar */}
+        {!isCustomer && (
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              onClick={() => onQuickAction('deposit')}
+              className="flex items-center gap-2 bg-[#1D7AFC] hover:bg-blue-500 text-white font-medium shadow-[0_4px_20px_rgba(29,122,252,0.4),inset_0_1px_0_rgba(255,255,255,0.3)] rounded-full px-4 py-2 text-xs transition-all cursor-pointer active:scale-95"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span>{lang === 'en' ? '+ Deposit' : lang === 'ar' ? '+ إيداع' : '+ پارە دانان'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onQuickAction('withdrawal')}
+              className="flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-slate-200 hover:text-white rounded-full px-4 py-2 text-xs backdrop-blur-md transition-all cursor-pointer active:scale-95"
+            >
+              <ArrowDownRight className="w-3.5 h-3.5 text-rose-400" />
+              <span>{lang === 'en' ? 'Withdrawal' : lang === 'ar' ? 'سحب' : 'ڕاکێشان'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onQuickAction('exchange')}
+              className="flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-slate-200 hover:text-white rounded-full px-4 py-2 text-xs backdrop-blur-md transition-all cursor-pointer active:scale-95"
+            >
+              <ArrowLeftRight className="w-3.5 h-3.5 text-cyan-400" />
+              <span>{lang === 'en' ? 'Exchange' : lang === 'ar' ? 'صرافة' : 'ئاڵوگۆڕ'}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onQuickAction('transfer')}
+              className="flex items-center gap-2 bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.12] text-slate-200 hover:text-white rounded-full px-4 py-2 text-xs backdrop-blur-md transition-all cursor-pointer active:scale-95"
+            >
+              <Send className="w-3.5 h-3.5 text-amber-400" />
+              <span>{lang === 'en' ? 'Hawala' : lang === 'ar' ? 'حوالة' : 'حەواڵە'}</span>
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Customer custom account summary */}
       {isCustomer && (
@@ -274,110 +280,226 @@ export default function DashboardView({
         </GlassCard>
       )}
 
-      {/* 2. Compact Multi-Span Bento Grid: Safe Vault Reserves */}
+      {/* 2. Unified 12-Column Bento Grid Architecture */}
       {!isCustomer && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-sm font-semibold tracking-wide text-white uppercase text-slate-300">
-              {lang === 'en' ? 'Vault Reserves & Equity' : lang === 'ar' ? 'أرصدة الخزينة ورأس المال' : 'سەرمایەی گەنجینە و هاوسەنگی گشتی'}
-            </h3>
-            <span className="text-xs font-mono text-slate-400">
-              {activeCurrencies.length} {lang === 'en' ? 'Active Currencies' : lang === 'ar' ? 'عملات نشطة' : 'دراوی چالاک'}
-            </span>
-          </div>
+        <div className="grid grid-cols-12 gap-5" data-animate="bento">
+          {/* Left 8 Cols: Unified Multi-Vault Hero Card & Monthly Cash Flow Studio */}
+          <div className="col-span-12 xl:col-span-8 flex flex-col">
+            <GlassCard className="p-0 h-full flex flex-col" contentClassName="p-5 sm:p-6 flex flex-col justify-between flex-1">
+              {/* Top Multi-Vault KPI Strip */}
+              <div className="pb-6 border-b border-white/[0.08]">
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-2">
+                    <Vault className="w-4 h-4 text-[#1D7AFC]" />
+                    <h3 className="text-xs sm:text-sm font-semibold tracking-wide text-white uppercase">
+                      {lang === 'en' ? 'Vault Reserves & Company Equity' : lang === 'ar' ? 'أرصدة الخزينة ورأس المال' : 'سەرمایەی گەنجینە و هاوسەنگی گشتی'}
+                    </h3>
+                  </div>
+                  <span className="text-[11px] font-mono text-slate-400 px-2.5 py-0.5 rounded-full bg-white/[0.04] border border-white/[0.08]">
+                    {activeCurrencies.length} {lang === 'en' ? 'Active Currencies' : lang === 'ar' ? 'عملات نشطة' : 'دراوی چالاک'}
+                  </span>
+                </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {activeCurrencies.map(cur => {
-              const safeBal = safeBalances[cur] || 0;
-              const liabilities = totalCustomerDeposits[cur] || 0;
-              const equity = safeBal - liabilities;
-              const cardTitle = lang === 'en' ? `${cur} Safe Vault` : lang === 'ar' ? `خزينة ${cur}` : `گەنجینەی ${cur}`;
-              
-              return (
-                <GlassCard
-                  key={cur}
-                  title={cardTitle}
-                  subtitle={`${cur} Currency Register`}
-                  icon={<Vault className="w-4 h-4 text-cyan-400" />}
-                  className="flex flex-col justify-between"
-                  contentClassName="space-y-4"
-                >
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-slate-400 font-medium">
-                        {lang === 'en' ? 'Liquid Safe Cash:' : lang === 'ar' ? 'السيولة في الخزنة:' : 'سەرمایەی کاش لە گەنجینە:'}
-                      </span>
-                      <span className="font-bold font-mono text-sm text-emerald-400 tabular-nums" dir="ltr">
-                        {formatMoney(safeBal, cur)}
-                      </span>
-                    </div>
-
-                    <div className="flex justify-between items-center text-xs">
-                      <span className="text-slate-400 font-medium">
-                        {lang === 'en' ? 'Client Liabilities:' : lang === 'ar' ? 'إجمالي أمانات العملاء:' : 'کۆی قەرز و ئەمانەت:'}
-                      </span>
-                      <span className="font-bold font-mono text-sm text-rose-400 tabular-nums" dir="ltr">
-                        {formatMoney(liabilities, cur)}
-                      </span>
-                    </div>
-
-                    {/* Net Company Equity Glass Container */}
-                    <div className="bg-white/[0.04] border border-white/[0.08] p-3.5 rounded-xl flex items-center justify-between mt-2">
-                      <div>
-                        <span className="text-[11px] font-semibold text-slate-300 block">
-                          {lang === 'en' ? 'Net Company Equity' : lang === 'ar' ? 'صافي رأس مال المكتب' : 'سەرمایەی پوختی نووسینگە'}
+                {/* Side-by-side USD and IQD Strip */}
+                <div className="grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x rtl:md:divide-x-reverse divide-white/[0.08]">
+                  {/* USD Safe Vault */}
+                  <div className="pb-5 md:pb-0 md:pe-6 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-slate-300">
+                          {lang === 'en' ? 'USD Safe Vault' : lang === 'ar' ? 'خزينة الدولار USD' : 'گەنجینەی دۆلار USD'}
                         </span>
-                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full mt-1 inline-block border ${
-                          equity >= 0 
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
+                          usdEquity >= 0 
                             ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25' 
                             : 'bg-rose-500/15 text-rose-400 border-rose-500/25'
                         }`}>
-                          {equity >= 0 
+                          {usdEquity >= 0 
                             ? (lang === 'en' ? 'Surplus' : lang === 'ar' ? 'فائض' : 'زیادە')
                             : (lang === 'en' ? 'Deficit' : lang === 'ar' ? 'عجز' : 'کەمی')}
                         </span>
                       </div>
-                      <div className="text-right">
-                        <span className={`text-lg font-bold font-mono tabular-nums tracking-tight ${
-                          equity >= 0 ? 'text-white' : 'text-rose-400'
-                        }`} dir="ltr">
-                          {formatMoney(equity, cur)}
+                      <p className={`text-3xl font-bold font-mono tabular-nums mt-1 tracking-tight ${usdEquity >= 0 ? 'text-white' : 'text-rose-400'}`} dir="ltr">
+                        {formatMoney(usdEquity, 'USD')}
+                      </p>
+                      <span className="text-[11px] text-slate-400 block mt-0.5">
+                        {lang === 'en' ? 'Net Company Equity' : lang === 'ar' ? 'صافي رأس مال المكتب' : 'سەرمایەی پوختی نووسینگە'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-4 mt-5 pt-3.5 border-t border-white/[0.06] text-xs">
+                      <div className="flex-1">
+                        <span className="text-[10px] text-slate-400 block mb-0.5">
+                          {lang === 'en' ? 'Liquid Cash' : lang === 'ar' ? 'السيولة في الخزنة' : 'کاش لە گەنجینە'}
+                        </span>
+                        <span className="font-bold font-mono text-emerald-400 tabular-nums text-sm" dir="ltr">
+                          {formatMoney(usdSafeBal, 'USD')}
+                        </span>
+                      </div>
+                      <div className="w-[1px] h-7 bg-white/[0.08]" />
+                      <div className="flex-1">
+                        <span className="text-[10px] text-slate-400 block mb-0.5">
+                          {lang === 'en' ? 'Client Liabilities' : lang === 'ar' ? 'أمانات العملاء' : 'ئەمانات و قەرز'}
+                        </span>
+                        <span className="font-bold font-mono text-rose-400 tabular-nums text-sm" dir="ltr">
+                          {formatMoney(usdLiabilities, 'USD')}
                         </span>
                       </div>
                     </div>
                   </div>
-                </GlassCard>
-              );
-            })}
-          </div>
-        </div>
-      )}
 
-      {/* 3. Analytics Bento Tiles: Cash Flow & Dollar Exchange */}
-      {!isCustomer && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          <div className="lg:col-span-7">
-            <GlassCard
-              className="p-0 h-full"
-              contentClassName="p-0"
-            >
-              <MonthlyCashFlowChart 
-                transactions={uniqueAllTransactions}
-                currencies={currencies}
-                lang={lang}
-              />
+                  {/* IQD Safe Vault */}
+                  <div className="pt-5 md:pt-0 md:ps-6 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-slate-300">
+                          {lang === 'en' ? 'IQD Safe Vault' : lang === 'ar' ? 'خزينة الدينار IQD' : 'گەنجینەی دینار IQD'}
+                        </span>
+                        <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${
+                          iqdEquity >= 0 
+                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/25' 
+                            : 'bg-rose-500/15 text-rose-400 border-rose-500/25'
+                        }`}>
+                          {iqdEquity >= 0 
+                            ? (lang === 'en' ? 'Surplus' : lang === 'ar' ? 'فائض' : 'زیادە')
+                            : (lang === 'en' ? 'Deficit' : lang === 'ar' ? 'عجز' : 'کەمی')}
+                        </span>
+                      </div>
+                      <p className={`text-3xl font-bold font-mono tabular-nums mt-1 tracking-tight ${iqdEquity >= 0 ? 'text-white' : 'text-rose-400'}`} dir="ltr">
+                        {formatMoney(iqdEquity, 'IQD')}
+                      </p>
+                      <span className="text-[11px] text-slate-400 block mt-0.5">
+                        {lang === 'en' ? 'Net Company Equity' : lang === 'ar' ? 'صافي رأس مال المكتب' : 'سەرمایەی پوختی نووسینگە'}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-4 mt-5 pt-3.5 border-t border-white/[0.06] text-xs">
+                      <div className="flex-1">
+                        <span className="text-[10px] text-slate-400 block mb-0.5">
+                          {lang === 'en' ? 'Liquid Cash' : lang === 'ar' ? 'السيولة في الخزنة' : 'کاش لە گەنجینە'}
+                        </span>
+                        <span className="font-bold font-mono text-emerald-400 tabular-nums text-sm" dir="ltr">
+                          {formatMoney(iqdSafeBal, 'IQD')}
+                        </span>
+                      </div>
+                      <div className="w-[1px] h-7 bg-white/[0.08]" />
+                      <div className="flex-1">
+                        <span className="text-[10px] text-slate-400 block mb-0.5">
+                          {lang === 'en' ? 'Client Liabilities' : lang === 'ar' ? 'أمانات العملاء' : 'ئەمانات و قەرز'}
+                        </span>
+                        <span className="font-bold font-mono text-rose-400 tabular-nums text-sm" dir="ltr">
+                          {formatMoney(iqdLiabilities, 'IQD')}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Other Active Currencies if present */}
+                {otherActiveCurrencies.length > 0 && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-4 mt-4 border-t border-white/[0.08]">
+                    {otherActiveCurrencies.map(cur => {
+                      const safeBal = safeBalances[cur] || 0;
+                      const liabilities = totalCustomerDeposits[cur] || 0;
+                      const equity = safeBal - liabilities;
+                      return (
+                        <div key={cur} className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                          <div className="flex justify-between items-center text-xs">
+                            <span className="font-semibold text-slate-300">{cur} Vault</span>
+                            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${equity >= 0 ? 'text-emerald-400 bg-emerald-500/10' : 'text-rose-400 bg-rose-500/10'}`}>
+                              {equity >= 0 ? 'Surplus' : 'Deficit'}
+                            </span>
+                          </div>
+                          <p className="text-lg font-bold font-mono text-white mt-1 tabular-nums" dir="ltr">
+                            {formatMoney(equity, cur)}
+                          </p>
+                          <div className="flex justify-between text-[10px] text-slate-400 mt-1">
+                            <span>Cash: {formatMoney(safeBal, cur)}</span>
+                            <span>Liabilities: {formatMoney(liabilities, cur)}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Integrated Monthly Cash Flow Studio */}
+              <div className="pt-4 flex-1">
+                <MonthlyCashFlowChart 
+                  transactions={uniqueAllTransactions}
+                  currencies={currencies}
+                  lang={lang}
+                />
+              </div>
             </GlassCard>
           </div>
 
-          <div className="lg:col-span-5">
-            <GlassCard
-              className="p-0 h-full"
-              contentClassName="p-0"
-            >
+          {/* Right 4 Cols: Stacked Side Bento Cards */}
+          <div className="col-span-12 xl:col-span-4 flex flex-col gap-5">
+            {/* Card 1: USD Exchange Radial Gauge */}
+            <GlassCard className="p-0 flex-1" contentClassName="p-0">
               <DollarExchangePieChart 
                 transactions={uniqueAllTransactions}
                 lang={lang}
               />
+            </GlassCard>
+
+            {/* Card 2: Live System Overview (Cirrel Live Store Style) */}
+            <GlassCard className="p-0 flex-1" contentClassName="p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-cyan-400" />
+                    <h4 className="text-xs font-semibold tracking-wide text-white uppercase">
+                      {lang === 'en' ? 'Live System Overview' : lang === 'ar' ? 'نظرة عامة حية على النظام' : 'کورتەی ڕاستەوخۆی سیستەم'}
+                    </h4>
+                  </div>
+                  <span className="flex items-center gap-1.5 text-[10px] font-medium px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    {lang === 'en' ? 'Vaults synced' : lang === 'ar' ? 'الخزائن متزامنة' : 'گەنجینە هاوکاتکراوە'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 mt-4">
+                  <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+                    <span className="text-[10px] uppercase text-slate-400 block font-medium">
+                      {lang === 'en' ? "Today's Deals" : lang === 'ar' ? 'معاملات اليوم' : 'مامەڵەکانی ئەمڕۆ'}
+                    </span>
+                    <p className="text-2xl font-bold font-mono text-white mt-1 tabular-nums">
+                      {filteredUserTransactions.length}
+                    </p>
+                  </div>
+
+                  <div className="p-3.5 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+                    <span className="text-[10px] uppercase text-slate-400 block font-medium">
+                      {lang === 'en' ? 'Active Currencies' : lang === 'ar' ? 'العملات النشطة' : 'دراوە چالاکەکان'}
+                    </span>
+                    <p className="text-2xl font-bold font-mono text-cyan-400 mt-1 tabular-nums">
+                      {activeCurrencies.length}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mini Equalizer & Status Footer */}
+              <div className="pt-4 mt-4 border-t border-white/[0.08] flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-end gap-1 h-5">
+                    <span className="w-1 h-3 rounded-full bg-blue-500 animate-[pulse_1.2s_ease-in-out_infinite]" />
+                    <span className="w-1 h-5 rounded-full bg-cyan-400 animate-[pulse_1.5s_ease-in-out_infinite]" />
+                    <span className="w-1 h-2 rounded-full bg-emerald-400 animate-[pulse_1s_ease-in-out_infinite]" />
+                    <span className="w-1 h-4 rounded-full bg-blue-400 animate-[pulse_1.8s_ease-in-out_infinite]" />
+                  </div>
+                  <span className="text-[11px] text-slate-400">
+                    {lang === 'en' ? 'Real-time ledger online' : lang === 'ar' ? 'السجل المباشر متصل' : 'تۆماری دارایی ئۆنلاینە'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px] font-mono text-emerald-400">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>100% OK</span>
+                </div>
+              </div>
             </GlassCard>
           </div>
         </div>
@@ -476,7 +598,7 @@ export default function DashboardView({
               if (tx.type === 'SafeAdjustment') transType = t.type_safe_adjustment;
 
               return (
-                <div key={tx.id} className="p-4 space-y-3 hover:bg-white/[0.04] transition-colors">
+                <div key={tx.id} data-animate="row" className="list-item-row p-4 space-y-3 hover:bg-white/[0.04] transition-colors">
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-mono text-[11px] text-slate-400">{tx.id}</span>
                     <span className="text-slate-400 font-mono text-[11px]">{formatKurdishDateTime(tx.timestamp)}</span>

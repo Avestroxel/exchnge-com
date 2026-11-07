@@ -7,6 +7,7 @@ import { Currency, Transaction } from '../types';
 import { AppState } from '../data/stateManager';
 import { formatMoney, formatKurdishDateTime, formatInputValue, parseInputValue } from '../utils';
 import { translations } from '../data/translations';
+import GlassCard from './GlassCard';
 
 interface SafeViewProps {
   appState: AppState;
@@ -248,41 +249,47 @@ export default function SafeView({
   return (
     <div className={`space-y-6 animate-fade-in ${lang === 'en' ? 'text-left' : 'text-right'}`}>
       
-      {/* Header controls */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-primary flex items-center gap-2">
-            <Vault className="w-6 h-6 text-primary" />
-            {t.safe_management}
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">{t.safe_description}</p>
+      {/* Top Header Card */}
+      <GlassCard className="p-0" contentClassName="p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 view-header" data-animate="header">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-[#1D7AFC] flex items-center gap-2.5">
+              <Vault className="w-6 h-6 text-[#1D7AFC]" />
+              <span>{t.safe_management}</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">{t.safe_description}</p>
+          </div>
         </div>
-      </div>
 
-      {/* Subtabs Navigation (دەفتەری حیسابی گەنجینە & تۆمارکردنی خەرجی) */}
-      <div className="flex border-b border-gray-200 text-xs font-bold gap-6 no-print">
-        <button
-          type="button"
-          onClick={() => setActiveSubTab('ledger')}
-          className={`pb-3 transition-colors relative flex items-center gap-2 ${
-            activeSubTab === 'ledger' ? 'text-primary border-b-2 border-primary' : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <BookOpen className="w-4 h-4" />
-          <span>{lang === 'en' ? 'Vault Ledger & Reserves' : lang === 'ar' ? 'دفتر حسابات الخزينة' : 'دەفتەری حیسابی گەنجینە'}</span>
-        </button>
+        {/* Subtabs Navigation (دەفتەری حیسابی گەنجینە & تۆمارکردنی خەرجی) */}
+        <div className="flex items-center gap-2 border-t border-white/[0.08] pt-3 text-xs font-bold no-print overflow-x-auto">
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('ledger')}
+            className={`px-4 py-2 rounded-xl transition-all relative flex items-center gap-2 cursor-pointer ${
+              activeSubTab === 'ledger'
+                ? 'bg-[#1D7AFC] text-white shadow-[0_4px_16px_rgba(29,122,252,0.4)]'
+                : 'bg-white/[0.05] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.08]'
+            }`}
+          >
+            <BookOpen className="w-4 h-4" />
+            <span>{lang === 'en' ? 'Vault Ledger & Reserves' : lang === 'ar' ? 'دفتر حسابات الخزينة' : 'دەفتەری حیسابی گەنجینە'}</span>
+          </button>
 
-        <button
-          type="button"
-          onClick={() => setActiveSubTab('expenses')}
-          className={`pb-3 transition-colors relative flex items-center gap-2 ${
-            activeSubTab === 'expenses' ? 'text-primary border-b-2 border-primary' : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <FileText className="w-4 h-4" />
-          <span>{lang === 'en' ? 'Office Expenses' : lang === 'ar' ? 'تسجيل المصاريف' : 'تۆمارکردنی خەرجی'}</span>
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={() => setActiveSubTab('expenses')}
+            className={`px-4 py-2 rounded-xl transition-all relative flex items-center gap-2 cursor-pointer ${
+              activeSubTab === 'expenses'
+                ? 'bg-[#1D7AFC] text-white shadow-[0_4px_16px_rgba(29,122,252,0.4)]'
+                : 'bg-white/[0.05] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.08]'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            <span>{lang === 'en' ? 'Office Expenses' : lang === 'ar' ? 'تسجيل المصاريف' : 'تۆمارکردنی خەرجی'}</span>
+          </button>
+        </div>
+      </GlassCard>
 
       {/* SUBTAB 1: VAULT LEDGER & RESERVES (دەفتەری حیسابی گەنجینە + پاشەکەوتی دراوەکان) */}
       {activeSubTab === 'ledger' && (
@@ -322,7 +329,7 @@ export default function SafeView({
                   const badgeColor = cur === 'USD' ? 'text-blue-600' : cur === 'IQD' ? 'text-amber-600' : cur === 'IRR' ? 'text-red-500' : 'text-emerald-600';
 
                   return (
-                    <div key={cur} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                    <div key={cur} data-animate="card" className="bento-card stat-card transform-gpu bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
                       <div className="flex justify-between items-start text-xs font-semibold">
                         <span className="text-gray-400">
                           {lang === 'en' 
@@ -362,7 +369,7 @@ export default function SafeView({
           </div>
 
           {/* Bottom: Vault Ledger Table (دەفتەری حیسابی گەنجینە) */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden space-y-4">
+          <div data-animate="card" className="glass-card bento-card transform-gpu bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden space-y-4">
             
             {/* Header & Filter Controls */}
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
@@ -478,7 +485,7 @@ export default function SafeView({
                   }
 
                   return (
-                    <div key={tx.id} className="p-3.5 space-y-2 hover:bg-gray-50/50 transition-colors">
+                    <div key={tx.id} data-animate="row" className="list-item-row p-3.5 space-y-2 hover:bg-gray-50/50 transition-colors">
                       <div className="flex justify-between items-center text-[10px] text-gray-400">
                         <span className="font-mono font-semibold text-primary">{tx.id}</span>
                         <span className="font-mono">{formatKurdishDateTime(tx.timestamp)}</span>
@@ -632,7 +639,7 @@ export default function SafeView({
         <div className="space-y-8">
           
           {/* Top: Form to record expense */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-5">
+          <div data-animate="card" className="bento-card transform-gpu bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-5">
             <div className="flex items-center gap-2 border-b border-gray-50 pb-3">
               <div className="p-2 bg-red-50 rounded-xl">
                 <ArrowUpRight className="w-5 h-5 text-red-600" />
@@ -725,7 +732,7 @@ export default function SafeView({
           </div>
 
           {/* Bottom: Office Expenses Log */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden space-y-4">
+          <div data-animate="card" className="bento-card transform-gpu bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden space-y-4">
             
             {/* Header & Controls */}
             <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -815,7 +822,7 @@ export default function SafeView({
                 </div>
               ) : (
                 expenseOnlyTransactions.map((tx) => (
-                  <div key={tx.id} className="p-3.5 space-y-2 hover:bg-gray-50/50 transition-colors">
+                  <div key={tx.id} data-animate="row" className="list-item-row p-3.5 space-y-2 hover:bg-gray-50/50 transition-colors">
                     <div className="flex justify-between items-center text-[10px] text-gray-400">
                       <span className="font-mono font-semibold text-red-600">{tx.id}</span>
                       <span className="font-mono">{formatKurdishDateTime(tx.timestamp)}</span>

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <!-- Laptop body base (bottom part) -->
+  <path d="M430,314 L82,314 C66,314 50,332 30,366 C10,400 15,404 42,404 L470,404 C497,404 502,400 482,366 C462,332 446,314 430,314 Z" fill="#46b7c1" />
+  <!-- Keyboard inner dark tray -->
+  <path d="M414,328 L98,328 C92,328 88,332 86,338 C80,358 72,382 68,390 C66,394 68,396 74,396 L438,396 C444,396 446,394 444,390 C440,382 432,358 426,338 C424,332 420,328 414,328 Z" fill="#2d7b83" />
+  <!-- Spacebar -->
+  <rect x="216" y="378" width="80" height="12" rx="4" fill="#46b7c1" />
+  <!-- Keys (grid placeholder) -->
+  <rect x="106" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="130" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="154" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="178" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="202" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="226" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="250" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="274" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="298" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="322" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="346" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="370" y="336" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="394" y="336" width="12" height="10" rx="2" fill="#46b7c1" />
+  
+  <rect x="100" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="124" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="148" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="172" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="196" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="220" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="244" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="268" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="292" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="316" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="340" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="364" y="350" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="388" y="350" width="24" height="10" rx="2" fill="#46b7c1" />
+
+  <rect x="94" y="364" width="22" height="10" rx="2" fill="#46b7c1" />
+  <rect x="122" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="146" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="170" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="194" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="218" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="242" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="266" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="290" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="314" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="338" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="362" y="364" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="386" y="364" width="32" height="10" rx="2" fill="#46b7c1" />
+
+  <rect x="88" y="378" width="30" height="10" rx="2" fill="#46b7c1" />
+  <rect x="124" y="378" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="148" y="378" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="172" y="378" width="38" height="10" rx="2" fill="#46b7c1" />
+  <rect x="302" y="378" width="38" height="10" rx="2" fill="#46b7c1" />
+  <rect x="346" y="378" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="370" y="378" width="18" height="10" rx="2" fill="#46b7c1" />
+  <rect x="394" y="378" width="30" height="10" rx="2" fill="#46b7c1" />
+
+  <!-- Laptop screen bezel (top part) -->
+  <rect x="102" y="108" width="308" height="212" rx="24" fill="#46b7c1" />
+  <!-- Screen itself (white inside) -->
+  <rect x="120" y="126" width="272" height="176" rx="10" fill="#ffffff" />
+  
+  <!-- Dollar sign inside screen -->
+  <text x="256" y="246" font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="124" font-weight="900" text-anchor="middle" fill="#46b7c1">$</text>
+</svg>

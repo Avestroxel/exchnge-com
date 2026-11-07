@@ -282,10 +282,10 @@ export default function MonthlyCashFlowChart({
         </div>
       </div>
 
-      {/* Clean KPI Summary Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        {/* Total Inflow Card */}
-        <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 flex items-center justify-between">
+      {/* Clean borderless KPI columns separated by subtle vertical hairlines */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 py-3 border-y border-white/[0.07] divide-y sm:divide-y-0 sm:divide-x rtl:sm:divide-x-reverse divide-white/[0.07] gap-y-3 sm:gap-y-0">
+        {/* Total Inflow Column */}
+        <div className="sm:px-4 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400">
               <ArrowDownRight className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
@@ -295,13 +295,13 @@ export default function MonthlyCashFlowChart({
               +{formatMoney(totalInflow, selectedCurrency)}
             </div>
           </div>
-          <span className="text-xs font-medium text-slate-400 font-mono">
+          <span className="text-xs font-medium text-slate-400 font-mono bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.06]">
             {inflowPercent.toFixed(0)}%
           </span>
         </div>
 
-        {/* Total Outflow Card */}
-        <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 flex items-center justify-between">
+        {/* Total Outflow Column */}
+        <div className="sm:px-4 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400">
               <ArrowUpRight className="w-3.5 h-3.5 text-rose-400 shrink-0" />
@@ -311,13 +311,13 @@ export default function MonthlyCashFlowChart({
               -{formatMoney(totalOutflow, selectedCurrency)}
             </div>
           </div>
-          <span className="text-xs font-medium text-slate-400 font-mono">
+          <span className="text-xs font-medium text-slate-400 font-mono bg-white/[0.04] px-2 py-0.5 rounded-full border border-white/[0.06]">
             {outflowPercent.toFixed(0)}%
           </span>
         </div>
 
-        {/* Net Flow Card */}
-        <div className="bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 flex items-center justify-between">
+        {/* Net Flow Column */}
+        <div className="sm:px-4 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-1.5 text-xs font-medium text-slate-400">
               <TrendingUp className="w-3.5 h-3.5 text-[#1D7AFC] shrink-0" />
@@ -329,10 +329,10 @@ export default function MonthlyCashFlowChart({
               {netFlow >= 0 ? '+' : ''}{formatMoney(netFlow, selectedCurrency)}
             </div>
           </div>
-          <span className={`text-[11px] font-medium font-mono px-2 py-0.5 rounded ${
+          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
             netFlow >= 0 
-              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
-              : 'bg-rose-500/10 text-rose-600 dark:text-rose-400'
+              ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+              : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
           }`}>
             {netFlow >= 0 
               ? (lang === 'en' ? 'Surplus' : lang === 'ar' ? 'فائض' : 'زیادە')
@@ -414,8 +414,8 @@ export default function MonthlyCashFlowChart({
                     y1={y} 
                     x2={svgWidth - paddingRight} 
                     y2={y} 
-                    className="stroke-gray-100 dark:stroke-slate-800"
-                    strokeWidth="1"
+                    stroke={idx === 0 ? "rgba(29, 122, 252, 0.45)" : "rgba(255, 255, 255, 0.06)"}
+                    strokeWidth={idx === 0 ? "1.5" : "1"}
                     strokeDasharray={idx === 0 ? undefined : "3 3"}
                   />
                   <text

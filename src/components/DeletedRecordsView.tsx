@@ -4,6 +4,7 @@ import {
   ArrowLeftRight, Send, Users, Vault, AlertTriangle, FileText
 } from 'lucide-react';
 import { DeletedRecord, DeletedRecordCategory, SystemSettings } from '../types';
+import GlassCard from './GlassCard';
 
 interface DeletedRecordsViewProps {
   deletedRecords: DeletedRecord[];
@@ -153,43 +154,45 @@ export default function DeletedRecordsView({
 
   return (
     <div className={`space-y-6 animate-fade-in ${lang === 'en' ? 'text-left' : 'text-right'}`}>
-      {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 rtl:border-r-4 rtl:border-r-primary ltr:border-l-4 ltr:border-l-primary">
-        <div className="flex items-start gap-4">
-          <div className="p-3 bg-red-50 text-red-600 rounded-xl border border-red-100">
-            <Trash2 className="w-7 h-7" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-gray-900">
-                {lang === 'en' ? 'Deleted Records Archive' : lang === 'ar' ? 'أرشيف السجلات المحذوفة' : 'سڕاوەکان (ئەرشیفی سڕاوەکان)'}
-              </h1>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-100">
-                {deletedRecords.length}
-              </span>
+      {/* Header Banner inside GlassCard */}
+      <GlassCard className="p-0 border-red-500/20 shadow-[0_20px_50px_rgba(239,68,68,0.1)]" contentClassName="p-5 sm:p-6">
+        <div data-animate="header" className="view-header flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-red-500/20 text-red-400 rounded-2xl border border-red-500/30 shrink-0">
+              <Trash2 className="w-7 h-7" />
             </div>
-            <p className="text-xs text-gray-400 mt-1">
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-bold text-white">
+                  {lang === 'en' ? 'Deleted Records Archive' : lang === 'ar' ? 'أرشيف السجلات المحذوفة' : 'سڕاوەکان (ئەرشیفی سڕاوەکان)'}
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-500/20 text-red-300 border border-red-500/30">
+                  {deletedRecords.length}
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                {lang === 'en'
+                  ? 'View-only historical log of all deleted transactions, customers, and hawala records.'
+                  : lang === 'ar'
+                  ? 'سجل للرؤية فقط لجميع العمليات والحوالات والزبائن المحذوفة للتدقيق والارشفة.'
+                  : 'بینینی سەرجەم ئەو مامەڵە و تۆمارانەی سڕاونەتەوە لە سیستەمدا بۆ وردبینی و دیاریکردنی هۆکارەکان.'}
+              </p>
+            </div>
+          </div>
+
+          {/* View-Only Alert Note */}
+          <div className="flex items-center gap-2.5 px-4 py-3 bg-amber-500/10 text-amber-300 rounded-xl border border-amber-500/25 text-xs font-medium max-w-md">
+            <AlertTriangle className="w-5 h-5 flex-shrink-0 text-amber-400" />
+            <span>
               {lang === 'en'
-                ? 'View-only historical log of all deleted transactions, customers, and hawala records.'
+                ? 'This section is read-only for security and auditing. Records cannot be restored.'
                 : lang === 'ar'
-                ? 'سجل للرؤية فقط لجميع العمليات والحوالات والزبائن المحذوفة للتدقيق والارشفة.'
-                : 'بینینی سەرجەم ئەو مامەڵە و تۆمارانەی سڕاونەتەوە لە سیستەمدا بۆ وردبینی و دیاریکردنی هۆکارەکان.'}
-            </p>
+                ? 'هذا القسم للقراءة والاطلاع فقط للتدقيق والأمان. لا يمكن استعادة السجلات المحذوفة.'
+                : 'ئەم بەشە تەنها بۆ بینین و سەیرکردنە بۆ وردبینی. هیچ تۆمارێکی سڕاوە ناگەڕێندرێتەوە بۆ باڵانسەکان.'}
+            </span>
           </div>
         </div>
-
-        {/* View-Only Alert Note */}
-        <div className="flex items-center gap-2.5 px-4 py-3 bg-amber-50 text-amber-800 rounded-xl border border-amber-200/80 text-xs font-medium max-w-md">
-          <AlertTriangle className="w-5 h-5 flex-shrink-0 text-amber-600" />
-          <span>
-            {lang === 'en'
-              ? 'This section is read-only for security and auditing. Records cannot be restored.'
-              : lang === 'ar'
-              ? 'هذا القسم للقراءة والاطلاع فقط للتدقيق والأمان. لا يمكن استعادة السجلات المحذوفة.'
-              : 'ئەم بەشە تەنها بۆ بینین و سەیرکردنە بۆ وردبینی. هیچ تۆمارێکی سڕاوە ناگەڕێندرێتەوە بۆ باڵانسەکان.'}
-          </span>
-        </div>
-      </div>
+      </GlassCard>
 
       {/* Metrics Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
@@ -269,7 +272,7 @@ export default function DeletedRecordsView({
       </div>
 
       {/* Filter & Search Toolbar */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-4">
+      <div data-animate="card" className="bento-card transform-gpu bg-white p-4 rounded-2xl shadow-sm border border-gray-100 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
           {/* Search Box */}
           <div className="md:col-span-5 relative">
@@ -345,7 +348,7 @@ export default function DeletedRecordsView({
       </div>
 
       {/* Main Table View */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div data-animate="card" className="bento-card transform-gpu bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         {filteredRecords.length === 0 ? (
           <div className="p-12 text-center space-y-4">
             <div className="w-16 h-16 mx-auto rounded-full bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-100">
@@ -449,19 +452,19 @@ export default function DeletedRecordsView({
 
       {/* Modal / Detailed Record Drawer */}
       {selectedRecord && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-gray-100 space-y-6 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-slate-950/90 backdrop-blur-2xl rounded-3xl max-w-xl w-full p-6 shadow-[0_25px_60px_rgba(0,0,0,0.7)] border border-white/[0.12] space-y-6 max-h-[90vh] overflow-y-auto text-white">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+            <div className="flex items-center justify-between border-b border-white/[0.08] pb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-red-50 text-red-600 rounded-xl border border-red-100">
+                <div className="p-2.5 bg-rose-500/15 text-rose-400 rounded-xl border border-rose-500/25">
                   <Trash2 className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">
+                  <h3 className="text-lg font-bold text-white">
                     {lang === 'en' ? 'Deleted Record Details' : lang === 'ar' ? 'تفاصيل السجل المحذوف' : 'وردەکارییەکانی تۆماری سڕاوە'}
                   </h3>
-                  <p className="text-xs font-mono text-gray-400 mt-0.5">
+                  <p className="text-xs font-mono text-slate-400 mt-0.5">
                     {selectedRecord.id} ({selectedRecord.originalId})
                   </p>
                 </div>
@@ -469,7 +472,7 @@ export default function DeletedRecordsView({
 
               <button
                 onClick={() => setSelectedRecord(null)}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded-xl hover:bg-gray-50 transition-colors"
+                className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/[0.08] transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>

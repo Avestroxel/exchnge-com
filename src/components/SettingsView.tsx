@@ -7,6 +7,7 @@ import ConfirmModal from './ConfirmModal';
 import ImageCropperModal from './ImageCropperModal';
 import ImageViewerModal from './ImageViewerModal';
 import EmployeeInfoModal from './EmployeeInfoModal';
+import GlassCard from './GlassCard';
 
 interface SettingsViewProps {
   appState: AppState;
@@ -372,22 +373,25 @@ export default function SettingsView({
 
   return (
     <div className={`space-y-6 animate-fade-in ${lang === 'en' ? 'text-left' : 'text-right'}`}>
-      <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-primary flex items-center gap-2">
-            <Settings className="w-6 h-6 text-primary" />
-            <span>
-              {!showAll ? (
-                targetSection === 'general' ? (lang === 'en' ? 'General Settings' : lang === 'ar' ? 'الإعدادات العامة' : 'ڕێکخستنی گشتی') :
-                targetSection === 'currencies' ? (lang === 'en' ? 'Currencies & Locations' : lang === 'ar' ? 'العملات والمواقع' : 'دراو و شوێن') :
-                targetSection === 'employees' ? (lang === 'en' ? 'Staff' : lang === 'ar' ? 'الموظفين' : 'کارمەند') :
-                (lang === 'en' ? 'Data & Information' : lang === 'ar' ? 'البيانات والمعلومات' : 'داتا و زانیاری')
-              ) : t.settings_title}
-            </span>
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">{t.settings_desc}</p>
+      {/* Top Header Card */}
+      <GlassCard className="p-0" contentClassName="p-5 sm:p-6">
+        <div className="flex items-center justify-between gap-3 view-header" data-animate="header">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-[#1D7AFC] flex items-center gap-2.5">
+              <Settings className="w-6 h-6 text-[#1D7AFC]" />
+              <span>
+                {!showAll ? (
+                  targetSection === 'general' ? (lang === 'en' ? 'General Settings' : lang === 'ar' ? 'الإعدادات العامة' : 'ڕێکخستنی گشتی') :
+                  targetSection === 'currencies' ? (lang === 'en' ? 'Currencies & Locations' : lang === 'ar' ? 'العملات والمواقع' : 'دراو و شوێن') :
+                  targetSection === 'employees' ? (lang === 'en' ? 'Staff' : lang === 'ar' ? 'الموظفين' : 'کارمەند') :
+                  (lang === 'en' ? 'Data & Information' : lang === 'ar' ? 'البيانات والمعلومات' : 'داتا و زانیاری')
+                ) : t.settings_title}
+              </span>
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">{t.settings_desc}</p>
+          </div>
         </div>
-      </div>
+      </GlassCard>
 
       {message && (
         <div className="p-3.5 bg-green-50 text-green-800 border border-green-100 rounded-xl text-xs font-semibold">
@@ -397,7 +401,7 @@ export default function SettingsView({
 
       {/* 1. General Settings Section - Wide Layout */}
       {showGeneral && (
-        <div id="settings-section-general" className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm rtl:border-r-4 rtl:border-r-primary ltr:border-l-4 ltr:border-l-primary hover:shadow-md transition-all duration-300">
+        <div id="settings-section-general" data-animate="card" className="bento-card transform-gpu bg-white p-6 rounded-2xl border border-gray-100 shadow-sm rtl:border-r-4 rtl:border-r-primary ltr:border-l-4 ltr:border-l-primary hover:shadow-md transition-all duration-300">
           <h3 className="text-sm font-bold text-gray-900 border-b border-gray-50 pb-3 mb-5 flex items-center gap-2">
             <Settings className="w-5 h-5 text-primary" />
             {sessionRole === 'Customer'
@@ -417,7 +421,7 @@ export default function SettingsView({
                     value={officeName}
                     onChange={(e) => setOfficeName(e.target.value)}
                     disabled={!isOwner}
-                    className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none disabled:bg-gray-50 disabled:text-gray-400 font-bold"
+                    className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all disabled:opacity-50 disabled:bg-white/[0.02] font-bold"
                   />
                 </div>
 
@@ -463,8 +467,8 @@ export default function SettingsView({
                         )}
                       </div>
                     ) : (
-                      <div className="w-14 h-14 rounded-2xl bg-gray-50 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 shrink-0">
-                        <Upload className="w-5 h-5 text-gray-400" />
+                      <div className="w-14 h-14 rounded-2xl bg-white/[0.05] border border-dashed border-white/20 flex items-center justify-center text-slate-400 shrink-0">
+                        <Upload className="w-5 h-5 text-slate-400" />
                       </div>
                     )}
 
@@ -477,7 +481,7 @@ export default function SettingsView({
                             src: officeLogo,
                             title: lang === 'en' ? 'Office Logo' : lang === 'ar' ? 'شعار المكتب' : 'لۆگۆی نووسینگە'
                           })}
-                          className="px-3 py-2 bg-white hover:bg-gray-50 text-gray-700 hover:text-primary rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-gray-200 shadow-2xs cursor-pointer"
+                          className="bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.15] text-slate-100 rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
                           title={lang === 'en' ? 'View Full Image' : 'سەیرکردنی وێنە'}
                         >
                           <Eye className="w-3.5 h-3.5 text-primary" />
@@ -486,7 +490,7 @@ export default function SettingsView({
                       )}
 
                       {isOwner ? (
-                        <label className="cursor-pointer px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-gray-200 shadow-2xs">
+                        <label className="cursor-pointer bg-white/[0.08] hover:bg-white/[0.14] border border-white/[0.15] text-slate-100 rounded-xl px-4 py-2 text-sm font-medium backdrop-blur-md transition-all flex items-center gap-1.5 shadow-sm">
                           <Upload className="w-3.5 h-3.5 text-primary" />
                           <span>
                             {officeLogo 
@@ -542,10 +546,10 @@ export default function SettingsView({
                   value={defaultCurrency}
                   onChange={(e) => setDefaultCurrency(e.target.value as Currency)}
                   disabled={!isOwner}
-                  className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none disabled:bg-gray-50 disabled:text-gray-400 font-bold"
+                  className="w-full bg-slate-950/50 border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#1D7AFC] focus:outline-none transition-all disabled:opacity-50 font-bold"
                 >
                   {currencies.map((cur) => (
-                    <option key={cur} value={cur}>
+                    <option key={cur} value={cur} className="bg-[#0B0F19] text-white">
                       {cur === 'USD' ? 'USD ($)' : cur === 'IQD' ? 'IQD (د.ع)' : cur === 'IRR' ? 'IRR (﷼)' : `${cur} (${cur})`}
                     </option>
                   ))}
@@ -554,40 +558,40 @@ export default function SettingsView({
             )}
 
             <div>
-              <label className="block text-xs font-bold text-gray-700 mb-1.5 font-semibold text-primary">{t.theme_color}</label>
+              <label className="block text-xs font-bold text-slate-300 mb-1.5 font-semibold text-primary">{t.theme_color}</label>
               <select
                 value={themeColor}
                 onChange={(e) => setThemeColor(e.target.value as any)}
-                className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-bold"
+                className="w-full bg-slate-950/50 border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#1D7AFC] focus:outline-none font-bold"
               >
                 <option value="blue">{lang === 'en' ? 'Blue' : lang === 'ar' ? 'أزرق' : 'شین (Blue)'}</option>
                 <option value="indigo">{lang === 'en' ? 'Indigo' : lang === 'ar' ? 'نيلي' : 'نیلی (Indigo)'}</option>
                 <option value="slate">{lang === 'en' ? 'Slate' : lang === 'ar' ? 'رمادي' : 'ڕەساسی (Slate)'}</option>
-                <option value="emerald">{lang === 'en' ? 'Emerald' : lang === 'ar' ? 'زمردي' : 'سەوز (Emerald)'}</option>
-                <option value="teal">{lang === 'en' ? 'Teal' : lang === 'ar' ? 'تيل / تركوازي' : 'کەسکی فیرۆزی (Teal)'}</option>
-                <option value="purple">{lang === 'en' ? 'Purple' : lang === 'ar' ? 'أرجواني' : 'مۆر (Purple)'}</option>
-                <option value="amber">{lang === 'en' ? 'Amber' : lang === 'ar' ? 'عنبري / ذهبي' : 'زێڕین (Amber)'}</option>
-                <option value="rose">{lang === 'en' ? 'Rose' : lang === 'ar' ? 'وردي / أحمر' : 'سوور / گوڵی (Rose)'}</option>
-                <option value="violet">{lang === 'en' ? 'Violet' : lang === 'ar' ? 'بنفسجي' : 'وەنەوشەیی (Violet)'}</option>
-                <option value="cyan">{lang === 'en' ? 'Cyan' : lang === 'ar' ? 'سمائي' : 'شینی ئاسمانی (Cyan)'}</option>
+                <option value="emerald" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Emerald' : lang === 'ar' ? 'زمردي' : 'سەوز (Emerald)'}</option>
+                <option value="teal" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Teal' : lang === 'ar' ? 'تيل / تركوازي' : 'کەسکی فیرۆزی (Teal)'}</option>
+                <option value="purple" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Purple' : lang === 'ar' ? 'أرجواني' : 'مۆر (Purple)'}</option>
+                <option value="amber" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Amber' : lang === 'ar' ? 'عنبري / ذهبي' : 'زێڕین (Amber)'}</option>
+                <option value="rose" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Rose' : lang === 'ar' ? 'وردي / أحمر' : 'سوور / گوڵی (Rose)'}</option>
+                <option value="violet" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Violet' : lang === 'ar' ? 'بنفسجي' : 'وەنەوشەیی (Violet)'}</option>
+                <option value="cyan" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Cyan' : lang === 'ar' ? 'سمائي' : 'شینی ئاسمانی (Cyan)'}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1.5 font-semibold text-primary">{t.theme_mode}</label>
-              <div className="inline-flex items-center gap-1 p-1 bg-gray-100/90 dark:bg-slate-800/90 border border-gray-200 dark:border-slate-700/80 rounded-xl transition-all duration-500 shadow-2xs">
+              <div className="bg-slate-950/60 border border-white/[0.12] p-1 rounded-xl inline-flex items-center gap-1">
                 {/* Sun icon: Sky Blue (Ultra-smooth & Compact) */}
                 <button
                   type="button"
                   onClick={() => handleSelectThemeMode('sky_light')}
                   title={lang === 'en' ? 'Sky Blue Mode' : lang === 'ar' ? 'الوضع السماوي الفاتح' : 'دۆخی شینی ئاسمانی'}
-                  className={`w-9 h-8 flex items-center justify-center rounded-lg transition-all duration-500 ease-in-out cursor-pointer ${
+                  className={`w-9 h-8 flex items-center justify-center rounded-lg transition-all duration-300 ease-in-out cursor-pointer ${
                     themeMode === 'sky_light' || themeMode === 'light'
                       ? 'bg-sky-500 text-white shadow-sm shadow-sky-500/40 ring-1 ring-sky-400/50 scale-105'
-                      : 'text-gray-400 dark:text-gray-400 hover:text-sky-500 hover:bg-white/80 dark:hover:bg-slate-700/60'
+                      : 'text-slate-400 hover:text-sky-400 hover:bg-white/[0.08]'
                   }`}
                 >
-                  <Sun className={`w-4 h-4 transition-all duration-500 ease-in-out ${themeMode === 'sky_light' || themeMode === 'light' ? 'text-white rotate-45 scale-110' : 'text-amber-500/80 hover:rotate-45'}`} />
+                  <Sun className={`w-4 h-4 transition-all duration-300 ease-in-out ${themeMode === 'sky_light' || themeMode === 'light' ? 'text-white rotate-45 scale-110' : 'text-amber-400/90 hover:rotate-45'}`} />
                 </button>
 
                 {/* Moon icon: Midnight Black (Ultra-smooth & Compact) */}
@@ -595,13 +599,13 @@ export default function SettingsView({
                   type="button"
                   onClick={() => handleSelectThemeMode('midnight')}
                   title={lang === 'en' ? 'Midnight Black Mode' : lang === 'ar' ? 'وضع سواد منتصف الليل' : 'دۆخی ڕەشی نێوەشەو'}
-                  className={`w-9 h-8 flex items-center justify-center rounded-lg transition-all duration-500 ease-in-out cursor-pointer ${
+                  className={`w-9 h-8 flex items-center justify-center rounded-lg transition-all duration-300 ease-in-out cursor-pointer ${
                     themeMode === 'midnight' || themeMode === 'dark'
-                      ? 'bg-slate-900 text-white shadow-sm shadow-black/50 ring-1 ring-slate-700/80 scale-105'
-                      : 'text-gray-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-slate-700/60'
+                      ? 'bg-[#1D7AFC] text-white shadow-sm shadow-[#1D7AFC]/40 ring-1 ring-[#1D7AFC]/50 scale-105'
+                      : 'text-slate-400 hover:text-white hover:bg-white/[0.08]'
                   }`}
                 >
-                  <Moon className={`w-4 h-4 transition-all duration-500 ease-in-out ${themeMode === 'midnight' || themeMode === 'dark' ? 'text-amber-300 -rotate-12 scale-110' : 'text-slate-400 hover:-rotate-12'}`} />
+                  <Moon className={`w-4 h-4 transition-all duration-300 ease-in-out ${themeMode === 'midnight' || themeMode === 'dark' ? 'text-cyan-200 -rotate-12 scale-110' : 'text-slate-400 hover:-rotate-12'}`} />
                 </button>
               </div>
             </div>
@@ -613,11 +617,11 @@ export default function SettingsView({
               <select
                 value={fontSize}
                 onChange={(e) => setFontSize(e.target.value as any)}
-                className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-bold"
+                className="w-full bg-slate-950/50 border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#1D7AFC] focus:outline-none font-bold"
               >
-                <option value="sm">{lang === 'en' ? 'Small' : lang === 'ar' ? 'صغير' : 'بچووک (Sm)'}</option>
-                <option value="md">{lang === 'en' ? 'Medium' : lang === 'ar' ? 'متوسط' : 'مامناوەند (Md)'}</option>
-                <option value="lg">{lang === 'en' ? 'Large' : lang === 'ar' ? 'كبير' : 'گەورە (Lg)'}</option>
+                <option value="sm" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Small' : lang === 'ar' ? 'صغير' : 'بچووک (Sm)'}</option>
+                <option value="md" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Medium' : lang === 'ar' ? 'متوسط' : 'مامناوەند (Md)'}</option>
+                <option value="lg" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Large' : lang === 'ar' ? 'كبير' : 'گەورە (Lg)'}</option>
               </select>
             </div>
           </div>
@@ -635,7 +639,7 @@ export default function SettingsView({
       )}
 
       {showCurrencies && (
-        <div id="settings-section-currencies" className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm rtl:border-r-4 rtl:border-r-primary ltr:border-l-4 ltr:border-l-primary hover:shadow-md transition-all duration-300">
+        <div id="settings-section-currencies" data-animate="card" className="bento-card transform-gpu bg-white p-6 rounded-2xl border border-gray-100 shadow-sm rtl:border-r-4 rtl:border-r-primary ltr:border-l-4 ltr:border-l-primary hover:shadow-md transition-all duration-300">
             <h3 className="text-sm font-bold text-gray-900 border-b border-gray-50 pb-3 mb-5 flex items-center gap-2">
               <Globe className="w-5 h-5 text-primary" />
               {lang === 'en' ? 'System Currencies & Delivery Locations' : lang === 'ar' ? 'العملات المتاحة ومواقع التسليم' : 'دراوەکانی سیستەم و شوێنەکانی گەیاندن'}
@@ -647,14 +651,14 @@ export default function SettingsView({
               <div className="space-y-6 md:px-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Coins className="w-4.5 h-4.5 text-primary" />
-                  <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wide">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wide">
                     {t.news_currency_title}
                   </h4>
                 </div>
 
-                <form onSubmit={handleAddCurrencySubmit} className="space-y-3 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+                <form onSubmit={handleAddCurrencySubmit} className="space-y-3 bg-slate-950/45 backdrop-blur-xl border border-white/[0.1] rounded-2xl p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)]">
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5">{t.news_currency_code}</label>
+                    <label className="block text-xs font-bold text-slate-300 mb-1.5">{t.news_currency_code}</label>
                     <input
                       type="text"
                       required
@@ -662,7 +666,7 @@ export default function SettingsView({
                       placeholder="e.g. EUR, TRY, GBP"
                       value={currencyCode}
                       onChange={(e) => setCurrencyCode(e.target.value)}
-                      className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary bg-white outline-none font-mono"
+                      className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-4 py-2.5 text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all font-mono text-xs"
                     />
                   </div>
 
@@ -678,12 +682,12 @@ export default function SettingsView({
                 </form>
 
                 <div className="pt-2">
-                  <h4 className="text-xs font-bold text-gray-400 mb-2">{t.available_currencies}</h4>
+                  <h4 className="text-xs font-bold text-slate-400 mb-2">{t.available_currencies}</h4>
                   <div className="flex flex-wrap gap-2">
                     {currencies.map((cur) => (
                       <div 
                         key={cur} 
-                        className="flex items-center gap-1.5 px-3 py-1 bg-gray-50 border border-gray-200/80 rounded-xl text-xs font-bold text-gray-700 shadow-xs"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white/[0.06] border border-white/[0.1] rounded-xl text-xs font-bold text-slate-200 shadow-xs"
                       >
                         <span>{cur}</span>
                         {cur !== 'USD' && cur !== 'IQD' && isOwner && onDeleteCurrency && (
@@ -699,7 +703,7 @@ export default function SettingsView({
                                 onDeleteCurrency(cur);
                               }
                             }}
-                            className="text-gray-400 hover:text-red-600 p-0.5 rounded transition-colors cursor-pointer"
+                            className="text-slate-400 hover:text-red-400 p-0.5 rounded transition-colors cursor-pointer"
                             title={lang === 'en' ? 'Delete Currency' : lang === 'ar' ? 'حذف العملة' : 'سڕینەوەی دراو'}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -715,15 +719,15 @@ export default function SettingsView({
               <div className="space-y-6 md:px-8 pt-6 md:pt-0">
                 <div className="flex items-center gap-2 mb-2">
                   <MapPin className="w-4.5 h-4.5 text-primary animate-bounce" />
-                  <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wide">
+                  <h4 className="text-xs font-bold text-white uppercase tracking-wide">
                     {lang === 'en' ? 'Delivery Locations' : lang === 'ar' ? 'مواقع التسليم' : 'شوێنەکانی گەیاندن'}
                   </h4>
                 </div>
 
                 {/* Add Location Form */}
-                <form onSubmit={handleAddLocationSubmit} className="space-y-3 p-4 bg-gray-50/50 rounded-xl border border-gray-100">
+                <form onSubmit={handleAddLocationSubmit} className="space-y-3 bg-slate-950/45 backdrop-blur-xl border border-white/[0.1] rounded-2xl p-5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)]">
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                    <label className="block text-xs font-bold text-slate-300 mb-1.5">
                       {lang === 'en' ? 'Location Name' : lang === 'ar' ? 'اسم الموقع' : 'ناوی شوێن'}
                     </label>
                     <input
@@ -732,7 +736,7 @@ export default function SettingsView({
                       placeholder={lang === 'en' ? 'e.g. Sulaymaniyah' : lang === 'ar' ? 'مثال: السليمانية' : 'نموونە: سلێمانی'}
                       value={newLocation}
                       onChange={(e) => setNewLocation(e.target.value)}
-                      className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+                      className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-4 py-2.5 text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all text-xs"
                     />
                   </div>
 
@@ -749,21 +753,21 @@ export default function SettingsView({
 
                 {/* List Locations */}
                 <div className="space-y-3">
-                  <h4 className="text-xs font-bold text-gray-400 mb-1">
+                  <h4 className="text-xs font-bold text-slate-400 mb-1">
                     {lang === 'en' ? 'Configured Locations' : lang === 'ar' ? 'المواقع المحددة' : 'شوێنە پاشەکەوتکراوەکان'}
                   </h4>
                   {locations.length === 0 ? (
-                    <p className="text-xs text-gray-400 font-semibold pr-1">
+                    <p className="text-xs text-slate-400 font-semibold pr-1">
                       {lang === 'en' ? 'No locations configured.' : lang === 'ar' ? 'لم يتم تكوين أي مواقع بعد.' : 'هیچ شوێنێک هێشتا زیادنەکراوە.'}
                     </p>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto border border-gray-50 p-2.5 rounded-xl">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto border border-white/[0.08] p-2.5 rounded-xl">
                       {locations.map((loc) => (
-                        <div key={loc} className="flex justify-between items-center text-xs p-2 bg-gray-50 hover:bg-gray-100/50 rounded-lg border border-gray-100 transition-colors">
-                          <span className="font-bold text-gray-700">{loc}</span>
+                        <div key={loc} className="flex justify-between items-center text-xs p-2 bg-white/[0.04] hover:bg-white/[0.08] rounded-xl border border-white/[0.08] transition-colors">
+                          <span className="font-bold text-slate-200">{loc}</span>
                           <button
                             onClick={() => handleDeleteLocation(loc)}
-                            className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors"
+                            className="p-1 text-slate-400 hover:text-red-400 rounded transition-colors"
                             type="button"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -781,7 +785,7 @@ export default function SettingsView({
       )}
 
       {showEmployees && (
-        <div id="settings-section-employees" className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm rtl:border-r-4 rtl:border-r-primary ltr:border-l-4 ltr:border-l-primary hover:shadow-md transition-all duration-300">
+        <div id="settings-section-employees" data-animate="card" className="bento-card transform-gpu bg-white p-6 rounded-2xl border border-gray-100 shadow-sm rtl:border-r-4 rtl:border-r-primary ltr:border-l-4 ltr:border-l-primary hover:shadow-md transition-all duration-300">
             <h3 className="text-sm font-bold text-gray-900 border-b border-gray-50 pb-3 mb-5 flex items-center gap-2">
               <Users className="w-5 h-5 text-primary" />
               {t.employee_management}
@@ -911,10 +915,10 @@ export default function SettingsView({
                   {lang === 'en' ? 'Active System Accounts' : lang === 'ar' ? 'حسابات النظام النشطة' : 'هەژمارە چالاکەکانی سیستەم'}
                 </h4>
                 
-                <div className="border border-gray-100 rounded-xl overflow-hidden shadow-sm bg-gray-50/20 max-h-96 overflow-y-auto">
+                <div className="border border-white/[0.08] rounded-xl overflow-hidden shadow-sm bg-white/[0.02] max-h-96 overflow-y-auto">
                   <table className="w-full text-right text-xs">
                     <thead>
-                      <tr className="bg-gray-50/80 border-b border-gray-100/80 text-gray-500 font-bold">
+                      <tr className="bg-white/[0.04] border-b border-white/[0.08] text-slate-400 font-bold">
                         <th className="p-3 font-semibold">{lang === 'en' ? 'Employee Name' : lang === 'ar' ? 'اسم الموظف' : 'ناوی کارمەند'}</th>
                         <th className="p-3 font-semibold">{lang === 'en' ? 'Mailing Account' : lang === 'ar' ? 'البريد الإلكتروني' : 'ئیمەیڵی چوونەژوورەوە'}</th>
                         <th className="p-3 font-semibold text-center">{lang === 'en' ? 'Privilege Role' : lang === 'ar' ? 'دور الصلاحية' : 'دەسەڵات / ڕۆڵ'}</th>
@@ -922,11 +926,11 @@ export default function SettingsView({
                         <th className="p-3 font-semibold text-center">{lang === 'en' ? 'Action' : lang === 'ar' ? 'إجراء' : 'کردار'}</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 bg-white">
+                    <tbody className="divide-y divide-white/[0.06] bg-transparent">
                       {users
                         .filter((u) => !isManager || u.role !== 'Owner')
                         .map((u) => (
-                        <tr key={u.id} className="hover:bg-gray-50/50 transition-colors">
+                        <tr key={u.id} className="hover:bg-white/[0.04] transition-colors">
                           <td className="p-3.5">
                             <div className="flex items-center gap-3">
                               <div className="relative group/avatar shrink-0">
@@ -1046,9 +1050,9 @@ export default function SettingsView({
                                       : 'bg-indigo-600 hover:bg-indigo-700'
                                 }`}
                               >
-                                <option value="Manager" className="text-gray-900 bg-white">{lang === 'en' ? 'Manager' : lang === 'ar' ? 'مدير' : 'بەڕێوەبەر'}</option>
-                                <option value="Admin" className="text-gray-900 bg-white">{lang === 'en' ? 'Admin' : lang === 'ar' ? 'أدمن' : 'ئادمین'}</option>
-                                <option value="Teller" className="text-gray-900 bg-white">{lang === 'en' ? 'Teller' : lang === 'ar' ? 'تيلر' : 'تەلەر'}</option>
+                                <option value="Manager" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Manager' : lang === 'ar' ? 'مدير' : 'بەڕێوەبەر'}</option>
+                                <option value="Admin" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Admin' : lang === 'ar' ? 'أدمن' : 'ئادمین'}</option>
+                                <option value="Teller" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Teller' : lang === 'ar' ? 'تيلر' : 'تەلەر'}</option>
                               </select>
                             )}
                           </td>
@@ -1121,10 +1125,10 @@ export default function SettingsView({
                     {t.add_new_employee}
                   </h4>
 
-                  <form onSubmit={handleAddEmployeeSubmit} className="space-y-4 p-5 bg-gray-50/50 rounded-2xl border border-gray-100">
+                  <form onSubmit={handleAddEmployeeSubmit} className="space-y-4 p-5 bg-slate-950/45 backdrop-blur-xl border border-white/[0.1] rounded-2xl shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)]">
                     {/* Employee Profile Photo (Circular Crop) */}
                     <div>
-                      <label className="block text-[11px] font-bold text-gray-500 mb-1.5">
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1.5">
                         {lang === 'en' ? 'Employee Photo (Circular)' : lang === 'ar' ? 'صورة الموظف (دائري)' : 'وێنەی کارمەند (بازنەیی)'}
                       </label>
                       <div className="flex items-center gap-3">
@@ -1141,12 +1145,12 @@ export default function SettingsView({
                             </button>
                           </div>
                         ) : (
-                          <div className="w-12 h-12 rounded-full bg-white border border-dashed border-gray-300 flex items-center justify-center text-gray-400 shrink-0">
-                            <User className="w-5 h-5 text-gray-400" />
+                          <div className="w-12 h-12 rounded-full bg-white/[0.05] border border-dashed border-white/20 flex items-center justify-center text-slate-400 shrink-0">
+                            <User className="w-5 h-5 text-slate-400" />
                           </div>
                         )}
 
-                        <label className="cursor-pointer px-3 py-1.5 bg-white hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-gray-200 shadow-2xs">
+                        <label className="cursor-pointer px-3 py-1.5 bg-white/[0.08] hover:bg-white/[0.14] text-slate-100 rounded-xl text-xs font-medium backdrop-blur-md transition-all flex items-center gap-1.5 border border-white/[0.15] shadow-sm">
                           <Camera className="w-3.5 h-3.5 text-primary" />
                           <span>{empAvatar ? (lang === 'en' ? 'Change Photo (Crop)' : 'گۆڕینی وێنە (بازنەیی)') : (lang === 'en' ? 'Upload Photo (Crop)' : 'دانانی وێنە (بازنەیی)')}</span>
                           <input
@@ -1172,56 +1176,56 @@ export default function SettingsView({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-500 mb-1">{t.full_name}</label>
+                        <label className="block text-[11px] font-bold text-slate-300 mb-1">{t.full_name}</label>
                         <input
                           type="text"
                           required
                           value={empName}
                           onChange={(e) => setEmpName(e.target.value)}
-                          className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+                          className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all"
                         />
                       </div>
 
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-500 mb-1">{t.role_label}</label>
+                        <label className="block text-[11px] font-bold text-slate-300 mb-1">{t.role_label}</label>
                         <select
                           value={empRole}
                           onChange={(e) => setEmpRole(e.target.value as any)}
-                          className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+                          className="w-full bg-slate-950/50 border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#1D7AFC] focus:outline-none font-bold"
                         >
-                          <option value="Manager">{lang === 'en' ? 'Manager' : lang === 'ar' ? 'مدير' : 'بەڕێوەبەر'}</option>
-                          <option value="Admin">{lang === 'en' ? 'Admin' : lang === 'ar' ? 'أدمن' : 'ئادمین'}</option>
-                          <option value="Teller">{lang === 'en' ? 'Member (Teller)' : lang === 'ar' ? 'عضو (تيلر)' : 'مێمبەر (کارمەند)'}</option>
+                          <option value="Manager" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Manager' : lang === 'ar' ? 'مدير' : 'بەڕێوەبەر'}</option>
+                          <option value="Admin" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Admin' : lang === 'ar' ? 'أدمن' : 'ئادمین'}</option>
+                          <option value="Teller" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Member (Teller)' : lang === 'ar' ? 'عضو (تيلر)' : 'مێمبەر (کارمەند)'}</option>
                         </select>
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-gray-500 mb-1">{t.email_login}</label>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1">{t.email_login}</label>
                       <input
                         type="email"
                         required
                         value={empEmail}
                         onChange={(e) => setEmpEmail(e.target.value)}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-mono"
+                        className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all font-mono"
                       />
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-bold text-gray-500 mb-1">{t.password_label}</label>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1">{t.password_label}</label>
                       <input
                         type="password"
                         required
                         value={empPassword}
                         onChange={(e) => setEmpPassword(e.target.value)}
-                        className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-mono"
+                        className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all font-mono"
                       />
                     </div>
 
                     {/* Monthly Salary Input */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-500 mb-1">
+                        <label className="block text-[11px] font-bold text-slate-300 mb-1">
                           {lang === 'en' ? 'Monthly Salary' : lang === 'ar' ? 'الراتب الشهري' : 'مووچەی مانگانە'}
                         </label>
                         <input
@@ -1231,20 +1235,20 @@ export default function SettingsView({
                           placeholder={lang === 'en' ? 'e.g. 750' : 'بڕی مووچە (نموونە: ٧٥٠)'}
                           value={empSalary}
                           onChange={(e) => setEmpSalary(e.target.value)}
-                          className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-mono"
+                          className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all font-mono"
                         />
                       </div>
                       <div>
-                        <label className="block text-[11px] font-bold text-gray-500 mb-1">
+                        <label className="block text-[11px] font-bold text-slate-300 mb-1">
                           {lang === 'en' ? 'Salary Currency' : lang === 'ar' ? 'عملة الراتب' : 'دراوی مووچە'}
                         </label>
                         <select
                           value={empSalaryCurrency}
                           onChange={(e) => setEmpSalaryCurrency(e.target.value)}
-                          className="w-full bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-bold text-gray-700"
+                          className="w-full bg-slate-950/50 border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#1D7AFC] focus:outline-none font-bold"
                         >
-                          <option value="USD">$ - دۆلاری ئەمریکی (USD)</option>
-                          <option value="IQD">د.ع - دیناری عێراقی (IQD)</option>
+                          <option value="USD" className="bg-[#0B0F19] text-white">$ - دۆلاری ئەمریکی (USD)</option>
+                          <option value="IQD" className="bg-[#0B0F19] text-white">د.ع - دیناری عێراقی (IQD)</option>
                         </select>
                       </div>
                     </div>
@@ -1268,7 +1272,7 @@ export default function SettingsView({
 
       {showData && (
         /* Start Fresh / Database Reset - Beautifully Separated and Placed at the Bottom */
-        <div id="settings-section-data" className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-gradient-to-br from-white to-rose-50/10 dark:from-slate-900 dark:to-rose-950/20 shadow-sm space-y-4">
+        <div id="settings-section-data" data-animate="card" className="bento-card transform-gpu bg-white dark:bg-slate-900 p-6 rounded-2xl border border-rose-200 dark:border-rose-900/50 bg-gradient-to-br from-white to-rose-50/10 dark:from-slate-900 dark:to-rose-950/20 shadow-sm space-y-4">
           <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
             <ShieldAlert className="w-5 h-5 animate-pulse text-red-500" />
             <h3 className="text-sm font-extrabold text-red-600 dark:text-red-400 uppercase">
@@ -1297,16 +1301,16 @@ export default function SettingsView({
 
       {/* Edit Employee Modal */}
       {canManageEmployees && employeeToEdit && (
-            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fade-in" dir={lang === 'en' ? 'ltr' : 'rtl'}>
-              <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col h-auto">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50">
-                  <h2 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                    <Settings className="w-4 h-4 text-amber-500" />
+            <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-fade-in" dir={lang === 'en' ? 'ltr' : 'rtl'}>
+              <div className="bg-slate-950/90 backdrop-blur-2xl border border-white/[0.12] rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.7)] w-full max-w-md overflow-hidden flex flex-col h-auto text-white">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.08] bg-white/[0.03]">
+                  <h2 className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <Settings className="w-4 h-4 text-amber-400" />
                     <span>
                       {lang === 'en' ? 'Edit System Account' : 'دەستکاریکردنی هەژماری سیستەم'}
                     </span>
                   </h2>
-                  <button onClick={() => setEmployeeToEdit(null)} className="text-gray-400 hover:text-gray-600 p-1">
+                  <button onClick={() => setEmployeeToEdit(null)} className="text-slate-400 hover:text-white p-1 transition-colors cursor-pointer">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -1314,7 +1318,7 @@ export default function SettingsView({
                 <form onSubmit={handleEditEmployeeSubmit} className="p-6 space-y-4 text-right">
                   {/* Avatar upload in edit modal (Circular) */}
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5 text-right">
+                    <label className="block text-xs font-bold text-slate-300 mb-1.5 text-right">
                       {lang === 'en' ? 'Profile Picture (Circular)' : lang === 'ar' ? 'الصورة الشخصية (دائري)' : 'وێنەی کەسی (بازنەیی)'}
                     </label>
                     <div className="flex items-center gap-3">
@@ -1331,13 +1335,13 @@ export default function SettingsView({
                           </button>
                         </div>
                       ) : (
-                        <div className="w-14 h-14 rounded-full bg-gray-100 border border-dashed border-gray-300 flex items-center justify-center text-gray-400 shrink-0">
-                          <User className="w-6 h-6 text-gray-400" />
+                        <div className="w-14 h-14 rounded-full bg-white/[0.05] border border-dashed border-white/20 flex items-center justify-center text-slate-400 shrink-0">
+                          <User className="w-6 h-6 text-slate-400" />
                         </div>
                       )}
 
                       <div className="flex items-center gap-2">
-                        <label className="cursor-pointer px-3 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-gray-200 shadow-2xs">
+                        <label className="cursor-pointer px-3 py-2 bg-white/[0.08] hover:bg-white/[0.14] text-slate-100 rounded-xl text-xs font-medium backdrop-blur-md transition-all flex items-center gap-1.5 border border-white/[0.15] shadow-sm">
                           <Camera className="w-3.5 h-3.5 text-primary" />
                           <span>{editEmpAvatar ? (lang === 'en' ? 'Change Photo (Crop)' : 'گۆڕینی وێنە (بازنەیی)') : (lang === 'en' ? 'Upload Photo (Crop)' : 'دانانی وێنە (بازنەیی)')}</span>
                           <input
@@ -1363,7 +1367,7 @@ export default function SettingsView({
                           <button
                             type="button"
                             onClick={() => setEditEmpAvatar(undefined)}
-                            className="px-2.5 py-2 text-xs font-bold text-red-600 hover:bg-red-50 rounded-xl border border-red-200 transition-colors"
+                            className="px-2.5 py-2 text-xs font-bold text-red-400 hover:bg-red-500/15 rounded-xl border border-red-500/30 transition-colors cursor-pointer"
                           >
                             {lang === 'en' ? 'Remove' : 'سڕینەوە'}
                           </button>
@@ -1373,7 +1377,7 @@ export default function SettingsView({
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5 text-right">
+                    <label className="block text-xs font-bold text-slate-300 mb-1.5 text-right">
                       {lang === 'en' ? 'Full Name' : 'ناوی تەواو'}
                     </label>
                     <input
@@ -1381,12 +1385,12 @@ export default function SettingsView({
                       required
                       value={editEmpName}
                       onChange={(e) => setEditEmpName(e.target.value)}
-                      className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+                      className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5 text-right">
+                    <label className="block text-xs font-bold text-slate-300 mb-1.5 text-right">
                       {lang === 'en' ? 'Email Address' : 'ئیمەیڵی چوونەژوورەوە'}
                     </label>
                     <input
@@ -1394,16 +1398,16 @@ export default function SettingsView({
                       required
                       value={editEmpEmail}
                       onChange={(e) => setEditEmpEmail(e.target.value)}
-                      className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-mono"
+                      className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5 text-right">
+                    <label className="block text-xs font-bold text-slate-300 mb-1.5 text-right">
                       {lang === 'en' ? 'Privilege Role' : 'دەسەڵات / ڕۆڵ'}
                     </label>
                     {employeeToEdit.role === 'Owner' ? (
-                      <div className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3.5 py-2 text-xs font-bold text-primary flex items-center justify-between">
+                      <div className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs font-bold text-primary flex items-center justify-between">
                         <span>{lang === 'en' ? 'Owner (Full Access)' : 'خاوەنکار (دەسەڵاتی باڵا)'}</span>
                         <span className="px-2 py-0.5 rounded text-[10px] bg-primary text-white font-bold uppercase">{lang === 'en' ? 'Owner' : 'خاوەن'}</span>
                       </div>
@@ -1417,17 +1421,17 @@ export default function SettingsView({
                             onEditEmployee(employeeToEdit.id, { role: newRole });
                           }
                         }}
-                        className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none"
+                        className="w-full bg-slate-950/50 border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#1D7AFC] focus:outline-none font-bold"
                       >
-                        <option value="Manager">{lang === 'en' ? 'Manager' : lang === 'ar' ? 'مدير' : 'بەڕێوەبەر'}</option>
-                        <option value="Admin">{lang === 'en' ? 'Admin' : lang === 'ar' ? 'أدمن' : 'ئادمین'}</option>
-                        <option value="Teller">{lang === 'en' ? 'Member (Teller)' : lang === 'ar' ? 'عضو (تيلر)' : 'مێمبەر (کارمەند)'}</option>
+                        <option value="Manager" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Manager' : lang === 'ar' ? 'مدير' : 'بەڕێوەبەر'}</option>
+                        <option value="Admin" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Admin' : lang === 'ar' ? 'أدمن' : 'ئادمین'}</option>
+                        <option value="Teller" className="bg-[#0B0F19] text-white">{lang === 'en' ? 'Member (Teller)' : lang === 'ar' ? 'عضو (تيلر)' : 'مێمبەر (کارمەند)'}</option>
                       </select>
                     )}
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5 text-right">
+                    <label className="block text-xs font-bold text-slate-300 mb-1.5 text-right">
                       {lang === 'en' ? 'Password' : 'وشەی تێپەڕ'}
                     </label>
                     <input
@@ -1435,14 +1439,14 @@ export default function SettingsView({
                       required
                       value={editEmpPassword}
                       onChange={(e) => setEditEmpPassword(e.target.value)}
-                      className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-mono"
+                      className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all font-mono"
                     />
                   </div>
 
                   {/* Monthly Salary Input in Edit Modal */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-right">
                     <div>
-                      <label className="block text-xs font-bold text-gray-700 mb-1.5 text-right">
+                      <label className="block text-xs font-bold text-slate-300 mb-1.5 text-right">
                         {lang === 'en' ? 'Monthly Salary' : lang === 'ar' ? 'الراتب الشهري' : 'مووچەی مانگانە'}
                       </label>
                       <input
@@ -1452,35 +1456,35 @@ export default function SettingsView({
                         placeholder={lang === 'en' ? 'e.g. 800' : 'بڕی مووچە (نموونە: ٨٠٠)'}
                         value={editEmpSalary}
                         onChange={(e) => setEditEmpSalary(e.target.value)}
-                        className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-mono"
+                        className="w-full bg-white/[0.05] border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-400 focus:border-[#1D7AFC] focus:bg-white/[0.08] focus:outline-none transition-all font-mono"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-gray-700 mb-1.5 text-right">
+                      <label className="block text-xs font-bold text-slate-300 mb-1.5 text-right">
                         {lang === 'en' ? 'Salary Currency' : lang === 'ar' ? 'عملة الراتب' : 'دراوی مووچە'}
                       </label>
                       <select
                         value={editEmpSalaryCurrency}
                         onChange={(e) => setEditEmpSalaryCurrency(e.target.value)}
-                        className="w-full border border-gray-200 rounded-xl px-3.5 py-2 text-xs focus:ring-1 focus:ring-primary focus:border-primary outline-none font-bold text-gray-700"
+                        className="w-full bg-slate-950/50 border border-white/[0.12] rounded-xl px-3.5 py-2 text-xs text-white focus:border-[#1D7AFC] focus:outline-none font-bold"
                       >
-                        <option value="USD">$ - دۆلاری ئەمریکی (USD)</option>
-                        <option value="IQD">د.ع - دیناری عێراقی (IQD)</option>
+                        <option value="USD" className="bg-[#0B0F19] text-white">$ - دۆلاری ئەمریکی (USD)</option>
+                        <option value="IQD" className="bg-[#0B0F19] text-white">د.ع - دیناری عێراقی (IQD)</option>
                       </select>
                     </div>
                   </div>
 
-                  <div className="flex gap-2 justify-end border-t border-gray-100 pt-3">
+                  <div className="flex gap-2 justify-end border-t border-white/[0.08] pt-3">
                     <button
                       type="button"
                       onClick={() => setEmployeeToEdit(null)}
-                      className="px-4 py-2 border border-gray-200 rounded-xl text-xs hover:bg-gray-50 text-gray-700 font-medium"
+                      className="px-4 py-2 border border-white/[0.15] rounded-xl text-xs hover:bg-white/[0.08] text-slate-200 font-medium transition-colors cursor-pointer"
                     >
                       {lang === 'en' ? 'Cancel' : 'پاشگەزبوونەوە'}
                     </button>
                     <button
                       type="submit"
-                      className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5"
+                      className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs shadow-sm flex items-center gap-1.5 cursor-pointer"
                     >
                       <span>{lang === 'en' ? 'Save Changes' : 'پاشەکەوتکردنی گۆڕانکاری'}</span>
                     </button>

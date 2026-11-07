@@ -5,6 +5,7 @@ import { AppState } from '../data/stateManager';
 import { formatMoney, formatKurdishDateTime, formatInputValue, parseInputValue } from '../utils';
 import { translations } from '../data/translations';
 import SearchableCustomerSelect from './SearchableCustomerSelect';
+import GlassCard from './GlassCard';
 
 interface ExchangeViewProps {
   appState: AppState;
@@ -259,18 +260,21 @@ export default function ExchangeView({
 
   return (
     <div className={`space-y-6 animate-fade-in ${lang === 'en' ? 'text-left' : 'text-right'}`}>
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-primary flex items-center gap-2">
-          <ArrowLeftRight className="w-6 h-6 text-primary" />
-          {t.currency_exchange_title}
-        </h2>
-        <p className="text-xs text-gray-400 mt-1">{t.exchange_desc}</p>
-      </div>
+      {/* Top Header Card */}
+      <GlassCard className="p-0" contentClassName="p-5 sm:p-6">
+        <div className="view-header" data-animate="header">
+          <h2 className="text-xl sm:text-2xl font-bold text-white rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-[#1D7AFC] flex items-center gap-2.5">
+            <ArrowLeftRight className="w-6 h-6 text-[#1D7AFC]" />
+            <span>{t.currency_exchange_title}</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">{t.exchange_desc}</p>
+        </div>
+      </GlassCard>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Core calculation form */}
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4 lg:col-span-2">
+        <div data-animate="card" className="bento-card transform-gpu bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4 lg:col-span-2">
           <form onSubmit={handleSubmit} className="space-y-4">
             
             {/* Choose Source first */}
@@ -395,7 +399,7 @@ export default function ExchangeView({
         </div>
 
         {/* Realtime balance preview of selected source */}
-        <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+        <div data-animate="card" className="bento-card transform-gpu bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
           <h3 className="text-sm font-bold text-gray-900 pb-1 border-b border-gray-100 flex items-center justify-between">
             <span>{lang === 'en' ? 'Balance Before & After' : lang === 'ar' ? 'الرصيد قبل / بعد الحركة' : 'هاوسەنگی پێش/پاش باڵانس'}</span>
           </h3>
@@ -501,7 +505,7 @@ export default function ExchangeView({
       </div>
 
       {/* Today's Exchange History List (Paginated, Last 9) */}
-      <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+      <div data-animate="card" className="bento-card transform-gpu bg-white p-6 rounded-2xl border border-gray-100 shadow-sm space-y-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between pb-3 border-b border-gray-100 gap-3">
           <div>
             <h3 className="text-base font-bold text-gray-900 flex items-center gap-1.5">
@@ -575,7 +579,7 @@ export default function ExchangeView({
                 const otherCurCode = tx.targetCurrency || 'IQD';
 
                 return (
-                  <div key={tx.id} className="p-4 space-y-3 hover:bg-gray-50/20 transition-colors" dir={lang === 'en' ? 'ltr' : 'rtl'}>
+                  <div key={tx.id} data-animate="row" className="list-item-row p-4 space-y-3 hover:bg-gray-50/20 transition-colors" dir={lang === 'en' ? 'ltr' : 'rtl'}>
                     <div className="flex justify-between items-center text-xs">
                       <span className="font-mono text-[10px] text-gray-400 font-bold">{tx.id}</span>
                       <span className="text-gray-400 font-mono text-[10px]">{formatKurdishDateTime(tx.timestamp)}</span>

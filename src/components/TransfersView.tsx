@@ -6,6 +6,7 @@ import { formatMoney, formatKurdishDateTime, formatInputValue, parseInputValue }
 import { translations } from '../data/translations';
 import ConfirmModal from './ConfirmModal';
 import SearchableCustomerSelect from './SearchableCustomerSelect';
+import GlassCard from './GlassCard';
 
 interface TransfersViewProps {
   appState: AppState;
@@ -370,75 +371,78 @@ export default function TransfersView({
 
   return (
     <div className={`space-y-6 animate-fade-in ${lang === 'en' ? 'text-left' : 'text-right'}`}>
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-primary flex items-center gap-2">
-          <Send className="w-6 h-6 text-primary" />
-          {t.transfers_title}
-        </h2>
-        <p className="text-xs text-gray-400 mt-1">{t.transfers_desc}</p>
-      </div>
+      {/* Top Header Card */}
+      <GlassCard className="p-0" contentClassName="p-5 sm:p-6 space-y-4">
+        <div className="view-header" data-animate="header">
+          <h2 className="text-xl sm:text-2xl font-bold text-white rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-[#1D7AFC] flex items-center gap-2.5">
+            <Send className="w-6 h-6 text-[#1D7AFC]" />
+            <span>{t.transfers_title}</span>
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">{t.transfers_desc}</p>
+        </div>
 
-      {/* Internal submenu tabs */}
-      <div className="flex border-b border-gray-200 text-xs font-bold gap-6 no-print">
-        <button
-          onClick={() => setActiveSubTab('fast')}
-          className={`pb-3 transition-colors relative flex items-center gap-2 cursor-pointer ${
-            activeSubTab === 'fast' 
-              ? 'text-primary border-b-2 border-primary font-black' 
-              : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <Zap className="w-4 h-4" />
-          <span>{t.fast_transfers}</span>
-        </button>
+        {/* Internal submenu tabs */}
+        <div className="flex items-center gap-2 border-t border-white/[0.08] pt-3 text-xs font-bold no-print overflow-x-auto">
+          <button
+            onClick={() => setActiveSubTab('fast')}
+            className={`px-4 py-2 rounded-xl transition-all relative flex items-center gap-2 cursor-pointer ${
+              activeSubTab === 'fast' 
+                ? 'bg-[#1D7AFC] text-white shadow-[0_4px_16px_rgba(29,122,252,0.4)]' 
+                : 'bg-white/[0.05] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.08]'
+            }`}
+          >
+            <Zap className="w-4 h-4" />
+            <span>{t.fast_transfers}</span>
+          </button>
 
-        <button
-          onClick={() => setActiveSubTab('standard')}
-          className={`pb-3 transition-colors relative flex items-center gap-2 cursor-pointer ${
-            activeSubTab === 'standard' 
-              ? 'text-primary border-b-2 border-primary font-black' 
-              : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <ArrowRightLeft className="w-4 h-4" />
-          <span>{t.standard_transfers}</span>
-        </button>
+          <button
+            onClick={() => setActiveSubTab('standard')}
+            className={`px-4 py-2 rounded-xl transition-all relative flex items-center gap-2 cursor-pointer ${
+              activeSubTab === 'standard' 
+                ? 'bg-[#1D7AFC] text-white shadow-[0_4px_16px_rgba(29,122,252,0.4)]' 
+                : 'bg-white/[0.05] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.08]'
+            }`}
+          >
+            <ArrowRightLeft className="w-4 h-4" />
+            <span>{t.standard_transfers}</span>
+          </button>
 
-        <button
-          onClick={() => setActiveSubTab('pickup')}
-          className={`pb-3 transition-colors relative flex items-center gap-2 cursor-pointer ${
-            activeSubTab === 'pickup' 
-              ? 'text-primary border-b-2 border-primary font-black' 
-              : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <CheckCircle className="w-4 h-4" />
-          <span>{lang === 'en' ? 'Deliver / Pickup' : lang === 'ar' ? 'استلام حوالة' : 'وەرگرتن / گەیاندن'}</span>
-          {fastTransfers.filter(ft => ft.status === 'Pending').length > 0 && (
-            <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-[10px] font-mono font-bold">
-              {fastTransfers.filter(ft => ft.status === 'Pending').length}
-            </span>
-          )}
-        </button>
+          <button
+            onClick={() => setActiveSubTab('pickup')}
+            className={`px-4 py-2 rounded-xl transition-all relative flex items-center gap-2 cursor-pointer ${
+              activeSubTab === 'pickup' 
+                ? 'bg-[#1D7AFC] text-white shadow-[0_4px_16px_rgba(29,122,252,0.4)]' 
+                : 'bg-white/[0.05] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.08]'
+            }`}
+          >
+            <CheckCircle className="w-4 h-4" />
+            <span>{lang === 'en' ? 'Deliver / Pickup' : lang === 'ar' ? 'استلام حوالة' : 'وەرگرتن / گەیاندن'}</span>
+            {fastTransfers.filter(ft => ft.status === 'Pending').length > 0 && (
+              <span className="bg-white/20 text-white px-2 py-0.5 rounded-full text-[10px] font-mono font-bold">
+                {fastTransfers.filter(ft => ft.status === 'Pending').length}
+              </span>
+            )}
+          </button>
 
-        <button
-          onClick={() => setActiveSubTab('history')}
-          className={`pb-3 transition-colors relative flex items-center gap-2 cursor-pointer ${
-            activeSubTab === 'history' 
-              ? 'text-primary border-b-2 border-primary font-black' 
-              : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <Clock className="w-4 h-4" />
-          <span>{lang === 'en' ? 'Transfers' : lang === 'ar' ? 'الحوالات' : 'حەواڵەکان'}</span>
-        </button>
-      </div>
+          <button
+            onClick={() => setActiveSubTab('history')}
+            className={`px-4 py-2 rounded-xl transition-all relative flex items-center gap-2 cursor-pointer ${
+              activeSubTab === 'history' 
+                ? 'bg-[#1D7AFC] text-white shadow-[0_4px_16px_rgba(29,122,252,0.4)]' 
+                : 'bg-white/[0.05] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.08]'
+            }`}
+          >
+            <Clock className="w-4 h-4" />
+            <span>{lang === 'en' ? 'Transfers' : lang === 'ar' ? 'الحوالات' : 'حەواڵەکان'}</span>
+          </button>
+        </div>
+      </GlassCard>
 
       {/* --- Tab Content --- */}
       
       {/* 1. Fast Transfer */}
       {activeSubTab === 'fast' && (
-        <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
+        <div data-animate="card" className="bento-card transform-gpu bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
           <form onSubmit={handleCreateFastSubmit} className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
               <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
@@ -622,7 +626,7 @@ export default function TransfersView({
 
       {/* 2. Standard Spread Transfer */}
       {activeSubTab === 'standard' && (
-        <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
+        <div data-animate="card" className="bento-card transform-gpu bg-white p-5 md:p-6 rounded-2xl border border-gray-100 shadow-sm space-y-6">
           <form onSubmit={handleCreateStandardSubmit} className="space-y-4">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3">
               <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
@@ -856,7 +860,7 @@ export default function TransfersView({
       {/* 4. Pickup Search area */}
       {activeSubTab === 'pickup' && (
         <div className="space-y-4 animate-fade-in">
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+          <div data-animate="card" className="bento-card transform-gpu bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
             <h3 className="text-sm font-bold text-gray-950">
               {lang === 'en' ? 'Fast Transfer Beneficiaries (Pickup Center)' : lang === 'ar' ? 'مستفيدي الحوالات السريعة (قيد الاستلام)' : 'سوودمەندانی حەواڵەی خێرا (پۆلی وەرگرتن)'}
             </h3>
@@ -876,7 +880,7 @@ export default function TransfersView({
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+          <div data-animate="card" className="bento-card transform-gpu bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
             {/* Mobile pending pickups view */}
             <div className="md:hidden divide-y divide-gray-100 p-1 bg-white">
               {filteredPickups.length === 0 ? (
@@ -885,7 +889,7 @@ export default function TransfersView({
                 </div>
               ) : (
                 filteredPickups.map((t) => (
-                  <div key={t.id} className="p-4 space-y-3 hover:bg-gray-50/40 transition-colors" dir={lang === 'en' ? 'ltr' : 'rtl'}>
+                  <div key={t.id} data-animate="row" className="list-item-row p-4 space-y-3 hover:bg-gray-50/40 transition-colors" dir={lang === 'en' ? 'ltr' : 'rtl'}>
                     <div className="flex justify-between items-center text-xs">
                       <span className="font-mono text-[11px] text-primary font-extrabold">{t.id}</span>
                       <span className="flex items-center gap-1 text-[9px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-md border border-amber-100 w-max font-sans">
@@ -1005,7 +1009,7 @@ export default function TransfersView({
       {activeSubTab === 'history' && (
         <div className="space-y-6 animate-fade-in">
           {/* Controls Bar: Search & Sub-filters */}
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div data-animate="card" className="bento-card transform-gpu bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4 items-center justify-between">
             <div className="flex items-center gap-2 w-full md:w-auto">
               <span className="text-xs font-bold text-gray-500">{lang === 'en' ? 'Filter:' : lang === 'ar' ? 'تصفية:' : 'فلتەر:'}</span>
               <button
@@ -1077,7 +1081,7 @@ export default function TransfersView({
 
           {/* Section 1: Fast Transfers */}
           {(historyFilter === 'all' || historyFilter === 'fast') && (
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+            <div data-animate="card" className="bento-card transform-gpu bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
               <div className="px-5 py-3.5 bg-gray-50 text-gray-900 font-bold text-sm border-b border-gray-100 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 bg-primary/10 text-primary rounded-lg text-xs font-black">⚡ {lang === 'en' ? 'Fast Transfers' : lang === 'ar' ? 'حوالات سريعة' : 'حەواڵەی خێرا'}</span>
@@ -1093,7 +1097,7 @@ export default function TransfersView({
                   </div>
                 ) : (
                   filteredFastTransfers.map((ft) => (
-                    <div key={ft.id} className="p-4 space-y-3 hover:bg-gray-50/20 transition-colors">
+                    <div key={ft.id} data-animate="row" className="list-item-row p-4 space-y-3 hover:bg-gray-50/20 transition-colors">
                       <div className="flex justify-between items-center text-xs">
                         <span className="font-mono text-[11px] text-primary font-bold">{ft.id}</span>
                         <span className="text-gray-400 font-mono text-[10px]">{formatKurdishDateTime(ft.createdAt)}</span>
@@ -1257,7 +1261,7 @@ export default function TransfersView({
 
           {/* Section 2: Standard Transfers */}
           {(historyFilter === 'all' || historyFilter === 'standard') && (
-            <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
+            <div data-animate="card" className="bento-card transform-gpu bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
               <div className="px-5 py-3.5 bg-gray-50 text-gray-900 font-bold text-sm border-b border-gray-100 flex justify-between items-center">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-black">🔄 {lang === 'en' ? 'Standard Transfers' : lang === 'ar' ? 'حوالات قياسية' : 'حەواڵەی ستاندارد'}</span>
@@ -1273,7 +1277,7 @@ export default function TransfersView({
                   </div>
                 ) : (
                   filteredStandardTransfers.map((st) => (
-                    <div key={st.id} className="p-4 space-y-3.5 hover:bg-gray-50/20 transition-colors">
+                    <div key={st.id} data-animate="row" className="list-item-row p-4 space-y-3.5 hover:bg-gray-50/20 transition-colors">
                       <div className="flex justify-between items-center text-xs">
                         <span className="font-mono text-[11px] text-secondary font-black">{st.id}</span>
                         <span className="text-[10px] text-gray-400 bg-gray-50 px-2 py-0.5 rounded-md font-bold">{st.deliveryLocation || '-'}</span>

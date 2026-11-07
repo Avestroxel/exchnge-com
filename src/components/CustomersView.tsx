@@ -6,6 +6,7 @@ import { formatMoney, formatInputValue, parseInputValue, formatKurdishDateTime }
 import { translations } from '../data/translations';
 import ConfirmModal from './ConfirmModal';
 import SearchableCustomerSelect from './SearchableCustomerSelect';
+import GlassCard from './GlassCard';
 
 interface CustomersViewProps {
   appState: AppState;
@@ -194,56 +195,63 @@ export default function CustomersView({
 
   return (
     <div className={`space-y-6 animate-fade-in ${lang === 'en' ? 'text-left' : 'text-right'}`}>
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-primary flex items-center gap-2">
-            <Users className="w-6 h-6 text-primary" />
-            {t.manage_customers}
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">{t.customers_desc}</p>
+      {/* Top Header Card */}
+      <GlassCard className="p-0" contentClassName="p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 view-header" data-animate="header">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-[#1D7AFC] flex items-center gap-2.5">
+              <Users className="w-6 h-6 text-[#1D7AFC]" />
+              <span>{t.manage_customers}</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">{t.customers_desc}</p>
+          </div>
+
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            {activeSubTab === 'list' && (
+              <button
+                onClick={() => handleOpenForm()}
+                className="px-5 py-2.5 bg-[#1D7AFC] hover:bg-blue-500 text-white font-medium rounded-xl text-xs flex items-center gap-2 shadow-[0_4px_20px_rgba(29,122,252,0.4)] transition-all w-full md:w-auto justify-center cursor-pointer"
+              >
+                <PlusCircle className="w-4 h-4" />
+                <span>{t.add_new_customer}</span>
+              </button>
+            )}
+          </div>
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          {activeSubTab === 'list' && (
-            <button
-              onClick={() => handleOpenForm()}
-              className="px-5 py-2.5 bg-primary text-white hover:bg-primary-dark font-semibold rounded-xl text-xs flex items-center gap-2 shadow-lg shadow-primary/10 transition-all w-full md:w-auto justify-center"
-            >
-              <PlusCircle className="w-4 h-4" />
-              <span>{t.add_new_customer}</span>
-            </button>
-          )}
+        {/* Subtabs for Customers View */}
+        <div className="flex items-center gap-2 border-t border-white/[0.08] pt-3 text-xs font-bold no-print overflow-x-auto">
+          <button
+            onClick={() => setActiveSubTab('list')}
+            className={`px-4 py-2 rounded-xl transition-all relative flex items-center gap-2 cursor-pointer ${
+              activeSubTab === 'list'
+                ? 'bg-[#1D7AFC] text-white shadow-[0_4px_16px_rgba(29,122,252,0.4)]'
+                : 'bg-white/[0.05] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.08]'
+            }`}
+          >
+            <Users className="w-4 h-4" />
+            <span>{lang === 'en' ? 'Customer List' : lang === 'ar' ? 'قائمة العملاء' : 'لیستی کڕیاران'}</span>
+          </button>
+
+          <button
+            onClick={() => setActiveSubTab('internal')}
+            className={`px-4 py-2 rounded-xl transition-all relative flex items-center gap-2 cursor-pointer ${
+              activeSubTab === 'internal'
+                ? 'bg-[#1D7AFC] text-white shadow-[0_4px_16px_rgba(29,122,252,0.4)]'
+                : 'bg-white/[0.05] text-slate-300 hover:text-white hover:bg-white/[0.1] border border-white/[0.08]'
+            }`}
+          >
+            <ArrowRightLeft className="w-4 h-4" />
+            <span>{lang === 'en' ? 'Internal Transfer' : lang === 'ar' ? 'التحويل الداخلي' : 'گواستنەوەی ناوخۆیی'}</span>
+          </button>
         </div>
-      </div>
-
-      {/* Subtabs for Customers View */}
-      <div className="flex border-b border-gray-200 text-xs font-bold gap-6 no-print">
-        <button
-          onClick={() => setActiveSubTab('list')}
-          className={`pb-3 transition-colors relative flex items-center gap-2 ${
-            activeSubTab === 'list' ? 'text-primary border-b-2 border-primary' : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          <span>{lang === 'en' ? 'Customer List' : lang === 'ar' ? 'قائمة العملاء' : 'لیستی کڕیاران'}</span>
-        </button>
-
-        <button
-          onClick={() => setActiveSubTab('internal')}
-          className={`pb-3 transition-colors relative flex items-center gap-2 ${
-            activeSubTab === 'internal' ? 'text-primary border-b-2 border-primary' : 'text-gray-400 hover:text-gray-600'
-          }`}
-        >
-          <ArrowRightLeft className="w-4 h-4" />
-          <span>{lang === 'en' ? 'Internal Transfer' : lang === 'ar' ? 'التحويل الداخلي' : 'گواستنەوەی ناوخۆیی'}</span>
-        </button>
-      </div>
+      </GlassCard>
 
       {/* SUBTAB 1: Customer List */}
       {activeSubTab === 'list' && (
         <div className="space-y-6">
           {/* Search and control panel */}
-          <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center gap-3">
+          <div data-animate="card" className="bento-card transform-gpu bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center gap-3">
             <div className="relative flex-1 w-full">
               <input
                 type="text"
@@ -276,7 +284,7 @@ export default function CustomersView({
           </div>
 
           {/* Customers list desktop table */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+          <div data-animate="card" className="bento-card transform-gpu bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             {/* Mobile Clients Card-vibe List */}
             <div className="md:hidden divide-y divide-gray-100 p-1 bg-white">
               {filteredCustomers.length === 0 ? (
@@ -285,7 +293,7 @@ export default function CustomersView({
                 </div>
               ) : (
                 filteredCustomers.map((c) => (
-                  <div key={c.id} className="p-4 space-y-3.5 hover:bg-gray-50/20 transition-colors">
+                  <div key={c.id} data-animate="row" className="list-item-row p-4 space-y-3.5 hover:bg-gray-50/20 transition-colors">
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="font-bold text-sm text-gray-900 flex items-center gap-1.5">
@@ -477,7 +485,7 @@ export default function CustomersView({
           )}
 
           {/* Internal Transfer Form */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm max-w-2xl mx-auto">
+          <div data-animate="card" className="bento-card transform-gpu bg-white p-6 rounded-2xl border border-gray-100 shadow-sm max-w-2xl mx-auto">
             <form onSubmit={handleInternalTransferSubmit} className="space-y-4">
               <h3 className="text-sm font-bold text-gray-900 border-b border-gray-50 pb-2 flex items-center gap-2">
                 <ArrowRightLeft className="w-5 h-5 text-primary" />

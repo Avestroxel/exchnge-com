@@ -10,6 +10,7 @@ import { AppState } from '../data/stateManager';
 import { formatMoney, formatKurdishDateTime, deduplicateTransactions, formatInputValue, parseInputValue } from '../utils';
 import { translations } from '../data/translations';
 import SearchableCustomerSelect from './SearchableCustomerSelect';
+import GlassCard from './GlassCard';
 
 interface ReportsViewProps {
   appState: AppState;
@@ -708,19 +709,21 @@ export default function ReportsView({
   return (
     <div className={`space-y-6 animate-fade-in ${lang === 'en' ? 'text-left' : 'text-right'}`}>
       
-      {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pb-4 border-b border-gray-100 no-print">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-primary flex items-center gap-2">
-            <TrendingUp className="w-6 h-6 text-primary" />
-            {t.reports_title}
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">{t.reports_desc}</p>
+      {/* Top Header Card */}
+      <GlassCard className="p-0" contentClassName="p-5 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 no-print view-header" data-animate="header">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-[#1D7AFC] flex items-center gap-2.5">
+              <TrendingUp className="w-6 h-6 text-[#1D7AFC]" />
+              <span>{t.reports_title}</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">{t.reports_desc}</p>
+          </div>
         </div>
-      </div>
+      </GlassCard>
 
       {/* Top Controls: Report Category & Date Range Filter Bar Side-by-Side */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center gap-3.5 no-print" dir={lang === 'en' ? 'ltr' : 'rtl'}>
+      <div data-animate="card" className="bento-card transform-gpu flex flex-col lg:flex-row items-stretch lg:items-center gap-3.5 no-print" dir={lang === 'en' ? 'ltr' : 'rtl'}>
         {/* Report Tab Selection (Dropdown List) */}
         <div className="bg-white p-3 px-4 rounded-xl border border-gray-200 shadow-xs flex items-center gap-3 w-full lg:w-72 shrink-0">
           <span className="text-xs font-extrabold text-gray-500 whitespace-nowrap">
@@ -3227,14 +3230,14 @@ export default function ReportsView({
         const periodNetChanges = calcCustNetChanges(filteredLedgerTransactions);
 
         return (
-          <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 no-print-main-layout">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100 dark:border-slate-800 flex flex-col ledger-print-container animate-fade-in" dir={lang === 'en' ? 'ltr' : 'rtl'}>
+          <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/70 backdrop-blur-md flex items-center justify-center p-4 no-print-main-layout">
+            <div className="bg-slate-950/95 backdrop-blur-2xl rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-[0_25px_60px_rgba(0,0,0,0.8)] border border-white/[0.12] flex flex-col ledger-print-container animate-fade-in text-white" dir={lang === 'en' ? 'ltr' : 'rtl'}>
               
               {/* Modal Header Controls - HIDDEN on print */}
-              <div className="px-6 py-4 bg-gray-50 dark:bg-slate-900 border-b border-gray-100 dark:border-slate-800 flex justify-between items-center no-print sticky top-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md z-10">
+              <div className="px-6 py-4 bg-slate-950/80 border-b border-white/[0.08] flex justify-between items-center no-print sticky top-0 backdrop-blur-md z-10">
                 <div className="flex items-center gap-2">
                   <FileText className="w-5 h-5 text-primary" />
-                  <h3 className="font-bold text-gray-900 dark:text-white text-sm">
+                  <h3 className="font-bold text-white text-sm">
                     {lang === 'en' ? 'Customer Account Statement & Ledger' : lang === 'ar' ? 'كشف حساب العميل وسجل الحركات' : 'وردەکاری دەفتەری حیسابات و جووڵەی کڕیار'}
                   </h3>
                 </div>
@@ -3604,17 +3607,17 @@ export default function ReportsView({
       {/* Embedded print css overrides and spacing */}
       {/* Edit Expense Modal */}
       {editingExpense && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 animate-fade-in no-print">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full space-y-4 shadow-xl border border-gray-100" dir={lang === 'en' ? 'ltr' : 'rtl'}>
-            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-              <h3 className="text-base font-extrabold text-gray-900 flex items-center gap-2">
-                <Pencil className="w-4 h-4 text-blue-600" />
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in no-print">
+          <div className="bg-slate-950/90 backdrop-blur-2xl rounded-2xl p-6 max-w-md w-full space-y-4 shadow-[0_25px_60px_rgba(0,0,0,0.7)] border border-white/[0.12] text-white" dir={lang === 'en' ? 'ltr' : 'rtl'}>
+            <div className="flex justify-between items-center border-b border-white/[0.08] pb-3">
+              <h3 className="text-base font-extrabold text-white flex items-center gap-2">
+                <Pencil className="w-4 h-4 text-[#1D7AFC]" />
                 {lang === 'en' ? 'Edit Expense' : lang === 'ar' ? 'تعديل المصروف' : 'دەستکاریکردنی خەرجی'}
               </h3>
               <button
                 type="button"
                 onClick={() => setEditingExpense(null)}
-                className="p-1 text-gray-400 hover:text-gray-700 rounded-lg"
+                className="p-1 text-slate-400 hover:text-white rounded-lg cursor-pointer transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -3808,13 +3811,13 @@ export default function ReportsView({
       `}</style>
       {/* Edit Fast Transfer Modal */}
       {fastTransferToEdit && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-lg w-full border border-gray-100 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
-            <div className="bg-primary px-6 py-4 text-white flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-slate-950/90 backdrop-blur-2xl rounded-2xl max-w-lg w-full border border-white/[0.12] shadow-[0_25px_60px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col max-h-[90vh] animate-scale-in text-white">
+            <div className="bg-[#1D7AFC]/20 border-b border-white/[0.1] px-6 py-4 text-white flex justify-between items-center">
               <h3 className="font-bold text-sm">
                 {lang === 'en' ? 'Edit Fast Transfer' : lang === 'ar' ? 'تعديل الحوالة السريعة' : 'دەستکاریکردنی حەواڵەی خێرا'} ({fastTransferToEdit.id})
               </h3>
-              <button onClick={() => setFastTransferToEdit(null)} className="text-white/80 hover:text-white font-bold text-lg cursor-pointer">✕</button>
+              <button onClick={() => setFastTransferToEdit(null)} className="text-slate-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
             <form onSubmit={handleSaveEditFast} className="p-6 space-y-3 overflow-y-auto text-xs">
               <div>
@@ -3918,13 +3921,13 @@ export default function ReportsView({
 
       {/* Edit Standard Transfer Modal */}
       {standardTransferToEdit && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-lg w-full border border-gray-100 shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-scale-in">
-            <div className="bg-primary px-6 py-4 text-white flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fade-in">
+          <div className="bg-slate-950/90 backdrop-blur-2xl rounded-2xl max-w-lg w-full border border-white/[0.12] shadow-[0_25px_60px_rgba(0,0,0,0.7)] overflow-hidden flex flex-col max-h-[90vh] animate-scale-in text-white">
+            <div className="bg-[#1D7AFC]/20 border-b border-white/[0.1] px-6 py-4 text-white flex justify-between items-center">
               <h3 className="font-bold text-sm">
                 {lang === 'en' ? 'Edit Standard Transfer' : lang === 'ar' ? 'تعديل الحوالة القياسية' : 'دەستکاریکردنی حەواڵەی ستاندارد'} ({standardTransferToEdit.id})
               </h3>
-              <button onClick={() => setStandardTransferToEdit(null)} className="text-white/80 hover:text-white font-bold text-lg cursor-pointer">✕</button>
+              <button onClick={() => setStandardTransferToEdit(null)} className="text-slate-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
             </div>
             <form onSubmit={handleSaveEditStandard} className="p-6 space-y-3 overflow-y-auto text-xs">
               <div className="grid grid-cols-2 gap-3">

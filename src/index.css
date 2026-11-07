@@ -441,7 +441,44 @@ html.navy .settings-flyout-item.settings-flyout-logout:hover .section-title {
   color: #f87171 !important;
 }
 
+/* GPU Acceleration & Locked 120fps Section Compositing */
+.transform-gpu {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.glass-card,
+.bento-card,
+.stat-card {
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
 /* Instant smooth motion transitions for sidebar sliding, pinning, and navigation items */
+@keyframes settingsPopoverAppear {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.settings-popover-animated {
+  animation: settingsPopoverAppear 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transform-origin: bottom right;
+  will-change: transform, opacity;
+}
+
+[dir="ltr"] .settings-popover-animated {
+  transform-origin: bottom left;
+}
+
 @keyframes flyoutAppearSmooth {
   0% {
     opacity: 0;
@@ -591,36 +628,84 @@ html.dark .hover-card-effect:hover {
    CIRREL REFRACTIVE DARK GLASSMORPHIC GLOBAL OVERRIDES (EXCLUDING PRINT)
    ========================================================================== */
 @media screen {
-  /* 1. Glass Card / Panel Surface mappings */
+  /* 1. Global Glass Card & Modal Panel Surface mappings */
   main .bg-white,
-  main .bg-gray-50,
   main .bg-slate-900,
   main [class*="bg-slate-900/"],
   main [class*="bg-slate-950/"],
   header.bg-slate-950\/50,
-  .glass-card-surface {
-    background-color: rgba(10, 14, 24, 0.38) !important;
+  .glass-card-surface,
+  .bento-card,
+  /* Modal Containers (Both inside and outside main) */
+  .fixed.inset-0 .bg-white,
+  .fixed.inset-0 [class*="bg-white/9"],
+  .fixed.inset-0 [class*="bg-white/8"],
+  .fixed.inset-0 .bg-slate-900,
+  .fixed.inset-0 [class*="bg-slate-900/"],
+  [role="dialog"] .bg-white,
+  [role="dialog"] {
+    background-color: rgba(10, 14, 24, 0.45) !important;
     backdrop-filter: blur(24px) saturate(150%) !important;
     -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
     box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22),
                 inset 0 0 24px rgba(255, 255, 255, 0.03),
-                0 20px 50px rgba(0, 0, 0, 0.45) !important;
+                0 20px 50px rgba(0, 0, 0, 0.5) !important;
+    color: #ffffff !important;
+  }
+
+  .fixed.inset-0 .bg-white,
+  .fixed.inset-0 .bg-slate-900,
+  .fixed.inset-0 .bg-slate-950,
+  .fixed.inset-0 > div:not(.absolute) {
+    background-color: rgba(10, 15, 28, 0.92) !important;
+    backdrop-filter: blur(28px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.22) !important;
+  }
+
+  /* 2. Inner Sub-cards, Nested Boxes, and Sub-panels across the entire app */
+  main .bg-gray-50,
+  main .bg-gray-100,
+  main .bg-gray-200,
+  main .bg-slate-50,
+  main .bg-slate-100,
+  main .bg-slate-200,
+  main [class*="bg-gray-50/"],
+  main [class*="bg-gray-100/"],
+  main [class*="bg-gray-200/"],
+  main [class*="bg-slate-50/"],
+  main [class*="bg-slate-100/"],
+  main [class*="bg-slate-200/"],
+  .fixed.inset-0 [class*="bg-gray-50"],
+  .fixed.inset-0 [class*="bg-gray-100"],
+  .fixed.inset-0 [class*="bg-gray-200"],
+  .fixed.inset-0 [class*="bg-slate-50"],
+  .fixed.inset-0 [class*="bg-slate-100"],
+  .fixed.inset-0 [class*="bg-slate-200"],
+  .sub-panel-glass {
+    background-color: rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: blur(16px) !important;
+    -webkit-backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
+    border-radius: 1rem !important;
     color: #ffffff !important;
   }
 
   main .bg-white:hover,
-  main .bg-gray-50:hover {
-    background-color: rgba(15, 23, 42, 0.45) !important;
-    border-color: rgba(255, 255, 255, 0.18) !important;
+  main .bg-gray-50:hover,
+  main .bg-gray-100:hover,
+  .fixed.inset-0 [class*="bg-gray-50"]:hover {
+    background-color: rgba(255, 255, 255, 0.07) !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
   }
 
-  /* 2. Inputs, Search Bars & Selects */
-  main input:not([type="checkbox"]):not([type="radio"]),
-  main select,
-  main textarea {
-    background-color: rgba(255, 255, 255, 0.05) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  /* 3. Inputs, Search Bars, Selects & Textareas (Global) */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  select,
+  textarea {
+    background-color: rgba(2, 6, 23, 0.55) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
     border-radius: 0.75rem !important;
     color: #ffffff !important;
     backdrop-filter: blur(12px) !important;
@@ -628,26 +713,56 @@ html.dark .hover-card-effect:hover {
     transition: all 0.2s ease !important;
   }
 
-  main input::placeholder,
-  main textarea::placeholder {
+  input::placeholder,
+  textarea::placeholder {
     color: #94a3b8 !important;
   }
 
-  main input:focus,
-  main select:focus,
-  main textarea:focus {
+  input:focus,
+  select:focus,
+  textarea:focus {
     border-color: #1D7AFC !important;
     outline: none !important;
-    box-shadow: 0 0 0 2px rgba(29, 122, 252, 0.3) !important;
+    box-shadow: 0 0 0 2px rgba(29, 122, 252, 0.25) !important;
   }
 
-  /* Ensure select dropdown popup menus on operating systems render with dark slate */
+  /* Ensure select dropdown options on operating systems render with dark background */
   select option {
-    background-color: #0b1120 !important;
+    background-color: #0b0f19 !important;
     color: #ffffff !important;
   }
 
-  /* 3. Primary Action Buttons */
+  /* 4. Secondary / Neutral Buttons & Action Pills */
+  button.bg-white,
+  button.bg-gray-50,
+  button.bg-gray-100,
+  button.bg-gray-200,
+  label.bg-white,
+  label.bg-gray-50,
+  label.bg-gray-100,
+  label.bg-gray-200 {
+    background-color: rgba(255, 255, 255, 0.07) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    color: #e2e8f0 !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    transition: all 0.2s ease !important;
+  }
+
+  button.bg-white:hover,
+  button.bg-gray-50:hover,
+  button.bg-gray-100:hover,
+  button.bg-gray-200:hover,
+  label.bg-white:hover,
+  label.bg-gray-50:hover,
+  label.bg-gray-100:hover,
+  label.bg-gray-200:hover {
+    background-color: rgba(255, 255, 255, 0.13) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
+  }
+
+  /* Primary Action Buttons */
   button.bg-primary,
   button[class*="bg-primary"],
   .btn-primary-glass {
@@ -664,58 +779,58 @@ html.dark .hover-card-effect:hover {
     background-color: #3b82f6 !important;
   }
 
-  /* 4. Glass Tables & Lists */
-  main table {
+  /* 5. Glass Tables & Lists */
+  table {
     border-collapse: separate !important;
     border-spacing: 0 !important;
     width: 100% !important;
   }
 
-  main thead,
-  main thead tr,
-  main thead th {
+  thead,
+  thead tr,
+  thead th {
     background-color: rgba(255, 255, 255, 0.03) !important;
     color: #94a3b8 !important;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     font-weight: 600 !important;
   }
 
-  main tbody tr {
+  tbody tr {
     border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
     color: #e2e8f0 !important;
     transition: background-color 0.2s ease !important;
   }
 
-  main tbody tr:hover {
+  tbody tr:hover {
     background-color: rgba(255, 255, 255, 0.04) !important;
   }
 
-  main [class*="divide-y"] {
+  [class*="divide-y"] {
     border-color: rgba(255, 255, 255, 0.06) !important;
   }
 
-  main [class*="divide-"] > * + * {
+  [class*="divide-"] > * + * {
     border-color: rgba(255, 255, 255, 0.06) !important;
   }
 
-  main [class*="border-gray-"] {
+  [class*="border-gray-"] {
     border-color: rgba(255, 255, 255, 0.08) !important;
   }
 
-  /* 5. Typography Harmonization */
-  main h1, main h2, main h3, main h4, main h5, main h6 {
+  /* 6. Typography Harmonization */
+  h1, h2, h3, h4, h5, h6 {
     color: #ffffff !important;
   }
 
-  main .text-gray-900,
-  main .text-gray-800,
-  main .text-gray-700 {
+  .text-gray-900,
+  .text-gray-800,
+  .text-gray-700 {
     color: #f1f5f9 !important;
   }
 
-  main .text-gray-600,
-  main .text-gray-500,
-  main .text-gray-400 {
+  .text-gray-600,
+  .text-gray-500,
+  .text-gray-400 {
     color: #94a3b8 !important;
   }
 

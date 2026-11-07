@@ -1,0 +1,29 @@
+{
+  "short_name": "ئاڵوگۆڕ",
+  "name": "سیستمی حیساباتی ئاڵوگۆڕ و حەواڵە",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    },
+    {
+      "src": "/app_icon.jpg",
+      "type": "image/jpeg",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app_icon.jpg",
+      "type": "image/jpeg",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0f172a",
+  "theme_color": "#46b7c1",
+  "display": "standalone",
+  "orientation": "portrait"
+}

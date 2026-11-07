@@ -8,6 +8,7 @@ import { AppState } from '../data/stateManager';
 import { formatMoney, formatInputValue, parseInputValue, formatKurdishDateTime, deduplicateTransactions } from '../utils';
 import { translations } from '../data/translations';
 import SearchableCustomerSelect from './SearchableCustomerSelect';
+import GlassCard from './GlassCard';
 
 interface UniversalEntryViewProps {
   appState: AppState;
@@ -316,25 +317,27 @@ export default function UniversalEntryView({
 
   return (
     <div className={`space-y-6 animate-fade-in pb-12 ${lang === 'en' ? 'text-left' : 'text-right'}`}>
-      {/* Header controls matching Safe, Customers, and Transfers views */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-primary flex items-center gap-2">
-            <PlusCircle className="w-6 h-6 text-primary" />
-            {t.universal_entry}
-          </h2>
-          <p className="text-xs text-gray-400 mt-1">
-            {lang === 'en'
-              ? 'Quickly record deposits, withdrawals, transfers, and currency exchanges'
-              : lang === 'ar'
-              ? 'تسجيل سريع للإيداعات، السحوبات، الحوالات وصرف العملات'
-              : 'تۆمارکردنی خێرای پارەدانان، پارە ڕاکێشان، حەواڵە و ئاڵوگۆڕی دراو'}
-          </p>
+      {/* Top Header Card */}
+      <GlassCard className="p-0" contentClassName="p-5 sm:p-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 view-header" data-animate="header">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white rtl:border-r-4 rtl:pr-3 ltr:border-l-4 ltr:pl-3 border-[#1D7AFC] flex items-center gap-2.5">
+              <PlusCircle className="w-6 h-6 text-[#1D7AFC]" />
+              <span>{t.universal_entry}</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              {lang === 'en'
+                ? 'Quickly record deposits, withdrawals, transfers, and currency exchanges'
+                : lang === 'ar'
+                ? 'تسجيل سريع للإيداعات، السحوبات، الحوالات وصرف العملات'
+                : 'تۆمارکردنی خێرای پارەدانان، پارە ڕاکێشان، حەواڵە و ئاڵوگۆڕی دراو'}
+            </p>
+          </div>
         </div>
-      </div>
+      </GlassCard>
 
       {/* Main Entry Card */}
-      <div className="bg-slate-950/35 backdrop-blur-2xl backdrop-saturate-150 p-5 sm:p-6 rounded-2xl border border-white/[0.12] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22),inset_0_0_24px_rgba(255,255,255,0.03),0_20px_50px_rgba(0,0,0,0.45)] space-y-5">
+      <div data-animate="card" className="glass-card transform-gpu bg-slate-950/35 backdrop-blur-2xl backdrop-saturate-150 p-5 sm:p-6 rounded-2xl border border-white/[0.12] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22),inset_0_0_24px_rgba(255,255,255,0.03),0_20px_50px_rgba(0,0,0,0.45)] space-y-5">
         {/* Success Banner */}
         {successBanner && (
           <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-3 rounded-xl text-xs font-bold flex items-center gap-2 animate-fade-in shadow-xs">
@@ -583,7 +586,7 @@ export default function UniversalEntryView({
                       className={`px-2 py-1 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                         exAction === 'BuyUSD'
                           ? 'bg-emerald-600 text-white border-emerald-600 font-black shadow-xs'
-                          : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
+                          : 'bg-white/[0.06] border-white/[0.12] text-slate-300 hover:bg-white/[0.1] hover:text-white'
                       }`}
                     >
                       {lang === 'en' ? 'Buy USD' : lang === 'ar' ? 'شراء $' : 'کڕینی $'}
@@ -594,7 +597,7 @@ export default function UniversalEntryView({
                       className={`px-2 py-1 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
                         exAction === 'SellUSD'
                           ? 'bg-rose-600 text-white border-rose-600 font-black shadow-xs'
-                          : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'
+                          : 'bg-white/[0.06] border-white/[0.12] text-slate-300 hover:bg-white/[0.1] hover:text-white'
                       }`}
                     >
                       {lang === 'en' ? 'Sell USD' : lang === 'ar' ? 'بيع $' : 'فرۆشتنی $'}
@@ -1011,7 +1014,7 @@ export default function UniversalEntryView({
       </div>
 
       {/* Today's Transactions Journal Section (بینینی هەموو مامەڵەکانی ئەمڕۆ - ٢٠ مامەڵە بۆ هەر لاپەڕەیەک) */}
-      <div className="bg-slate-950/35 backdrop-blur-2xl backdrop-saturate-150 border border-white/[0.12] rounded-2xl shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22),inset_0_0_24px_rgba(255,255,255,0.03),0_20px_50px_rgba(0,0,0,0.45)] overflow-hidden">
+      <div data-animate="card" className="glass-card transform-gpu bg-slate-950/35 backdrop-blur-2xl backdrop-saturate-150 border border-white/[0.12] rounded-2xl shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22),inset_0_0_24px_rgba(255,255,255,0.03),0_20px_50px_rgba(0,0,0,0.45)] overflow-hidden">
         <div className="px-5 py-4 border-b border-white/[0.08] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white/[0.02]">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#1D7AFC]/20 text-[#60A5FA] flex items-center justify-center font-bold shrink-0 border border-[#1D7AFC]/30">
@@ -1055,7 +1058,7 @@ export default function UniversalEntryView({
               if (tx.type === 'SafeAdjustment') transType = t.type_safe_adjustment;
 
               return (
-                <div key={tx.id} className="p-4 space-y-3 hover:bg-gray-50/40 transition-colors">
+                <div key={tx.id} data-animate="row" className="list-item-row p-4 space-y-3 hover:bg-gray-50/40 transition-colors">
                   <div className="flex justify-between items-center text-xs">
                     <span className="font-mono text-[10px] text-gray-400 font-medium">{tx.id}</span>
                     <span className="text-gray-400 font-mono text-[10px]">{formatKurdishDateTime(tx.timestamp)}</span>
@@ -1192,11 +1195,11 @@ export default function UniversalEntryView({
 
         {/* Pagination Controls (20 transactions per page) */}
         {totalPages > 1 && (
-          <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-gray-50/50 flex-wrap gap-3">
+          <div className="px-6 py-4 border-t border-white/[0.08] flex items-center justify-between bg-white/[0.02] flex-wrap gap-3">
             <button
               disabled={activePage === 1}
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs min-h-[40px] min-w-[80px]"
+              className="px-4 py-2 bg-white/[0.07] border border-white/[0.12] text-slate-200 rounded-xl text-xs font-bold hover:bg-white/[0.12] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs min-h-[40px] min-w-[80px]"
             >
               {lang === 'en' ? 'Previous' : lang === 'ar' ? 'السابق' : 'پێشوو'}
             </button>
@@ -1211,7 +1214,7 @@ export default function UniversalEntryView({
                     className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer min-h-[36px] min-w-[36px] ${
                       isActive 
                         ? 'bg-primary text-white border border-primary shadow-sm shadow-primary/20 scale-105' 
-                        : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                        : 'bg-white/[0.06] border border-white/[0.1] text-slate-300 hover:bg-white/[0.12] hover:text-white'
                     }`}
                   >
                     {pageNumber}
@@ -1223,7 +1226,7 @@ export default function UniversalEntryView({
             <button
               disabled={activePage === totalPages}
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-xl text-xs font-bold hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs min-h-[40px] min-w-[80px]"
+              className="px-4 py-2 bg-white/[0.07] border border-white/[0.12] text-slate-200 rounded-xl text-xs font-bold hover:bg-white/[0.12] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs min-h-[40px] min-w-[80px]"
             >
               {lang === 'en' ? 'Next' : lang === 'ar' ? 'التالي' : 'دواتر'}
             </button>

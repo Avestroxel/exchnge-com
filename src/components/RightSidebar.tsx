@@ -2,8 +2,9 @@ import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { 
   LayoutDashboard, Vault, Users, ArrowLeftRight, Send, 
-  BarChart3, Settings, LogOut, X, Lock, Unlock, Trash2, PlusCircle,
-  Coins, ShieldAlert, Sun, Moon
+  BarChart3, Settings, LogOut, X, Trash2, PlusCircle,
+  Coins, ShieldAlert, Sun, Moon,
+  PanelRightClose, PanelRightOpen, PanelLeftClose, PanelLeftOpen
 } from 'lucide-react';
 import { AppUser, Customer, SystemSettings } from '../types';
 import { translations } from '../data/translations';
@@ -74,6 +75,91 @@ export default function RightSidebar({
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const prevRectRef = useRef<{ top: number; height: number } | null>(null);
 
+  // Click-only expand/collapse state (persisted to localStorage)
+  const [isExpanded, setIsExpanded] = useState<boolean>(() => {
+    const saved = localStorage.getItem('sidebar_expanded');
+    return saved !== null ? saved === 'true' : true; 
+  });
+
+  const [isLogoHovered, setIsLogoHovered] = useState<boolean>(false);
+
+  const toggleSidebar = () => {
+    setIsExpanded((prev) => {
+      const next = !prev;
+      localStorage.setItem('sidebar_expanded', String(next));
+      return next;
+    });
+  };
+
+  const effectiveExpanded = Boolean(isOpenMobile || isExpanded);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const isInitialMount = useRef<boolean>(true);
+
+  // Cirrel Smooth Folding GSAP Motion (locked to exact 256px / 68px)
+  useLayoutEffect(() => {
+    const sidebar = sidebarRef.current;
+    if (!sidebar) return;
+
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      if (effectiveExpanded) {
+        gsap.set(sidebar, { width: 256 });
+        gsap.set('.sidebar-text-wrap', { opacity: 1, x: 0, width: 'auto', pointerEvents: 'auto' });
+      } else {
+        gsap.set(sidebar, { width: 68 });
+        gsap.set('.sidebar-text-wrap', { opacity: 0, x: -10, width: 0, pointerEvents: 'none' });
+      }
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        defaults: { overwrite: 'auto', force3D: true }
+      });
+
+      if (effectiveExpanded) {
+        // 1. Smoothly expand the glass sidebar container width
+        tl.to(sidebar, {
+          width: 256,
+          duration: 0.55,
+          ease: 'expo.out',
+        }, 0)
+        // 2. Softly unfold & glide text labels into view
+        .fromTo(
+          '.sidebar-text-wrap',
+          { opacity: 0, x: -12, width: 0 },
+          {
+            opacity: 1,
+            x: 0,
+            width: 'auto',
+            duration: 0.45,
+            stagger: 0.015,
+            ease: 'expo.out',
+          },
+          0.06
+        );
+      } else {
+        // 1. Smoothly fold text labels into each other and fade out
+        tl.to('.sidebar-text-wrap', {
+          opacity: 0,
+          x: -10,
+          width: 0,
+          duration: 0.35,
+          ease: 'power3.inOut',
+        }, 0)
+        // 2. Smoothly contract sidebar width around the stationary icons
+        .to(sidebar, {
+          width: 68,
+          duration: 0.5,
+          ease: 'expo.inOut',
+        }, 0.02);
+      }
+    }, sidebar);
+
+    return () => ctx.revert();
+  }, [effectiveExpanded]);
+
+  // Active Blue GSAP Pill positioning & animated caterpillar stretching (triggered strictly by activeTab)
   useLayoutEffect(() => {
     const pill = activePillRef.current;
     const container = navContainerRef.current;
@@ -93,7 +179,11 @@ export default function RightSidebar({
 
     // First render initialization
     if (!prevRectRef.current) {
-      gsap.set(pill, { y: targetY, height: targetH, opacity: 1 });
+      gsap.set(pill, { 
+        y: targetY, 
+        height: targetH, 
+        opacity: 1 
+      });
       prevRectRef.current = { top: targetY, height: targetH };
       return;
     }
@@ -102,35 +192,62 @@ export default function RightSidebar({
     const startH = prevRectRef.current.height;
     prevRectRef.current = { top: targetY, height: targetH };
 
-    if (Math.abs(targetY - startY) < 2) {
-      gsap.set(pill, { y: targetY, height: targetH, opacity: 1 });
-      return;
-    }
-
-    // Calculate bounding box spanning BOTH old item and new item
-    const spanTop = Math.min(startY, targetY);
-    const spanBottom = Math.max(startY + startH, targetY + targetH);
-    const fullStretchHeight = spanBottom - spanTop;
-
     gsap.killTweensOf(pill);
     gsap.set(pill, { opacity: 1 });
 
-    const tl = gsap.timeline();
-    // Phase 1: Anchor to the old item while stretching continuously across intermediate items to reach the new item
-    tl.to(pill, {
-      y: spanTop,
-      height: fullStretchHeight,
-      duration: 0.22,
-      ease: 'power2.out',
-    })
-    // Phase 2: Smoothly retract the trailing edge into the new target item
-    .to(pill, {
-      y: targetY,
-      height: targetH,
-      duration: 0.36,
-      ease: 'expo.out',
-    }, '-=0.06');
+    if (Math.abs(targetY - startY) > 2) {
+      // Phase 1: Anchor & stretch across intermediate items
+      const spanTop = Math.min(startY, targetY);
+      const spanBottom = Math.max(startY + startH, targetY + targetH);
+      const fullStretchHeight = spanBottom - spanTop;
+
+      const tl = gsap.timeline();
+      tl.to(pill, {
+        y: spanTop,
+        height: fullStretchHeight,
+        duration: 0.24,
+        ease: 'power2.out',
+      })
+      // Phase 2: Smoothly retract trailing edge into new target
+      .to(pill, {
+        y: targetY,
+        height: targetH,
+        duration: 0.38,
+        ease: 'expo.out',
+      }, '-=0.06');
+    } else {
+      gsap.to(pill, {
+        y: targetY,
+        height: targetH,
+        duration: 0.3,
+        ease: 'power3.out',
+      });
+    }
   }, [activeTab]);
+
+  // Handle window resize & font-size changes safely without killing active caterpillar tweens
+  useEffect(() => {
+    const updatePillStatic = () => {
+      const pill = activePillRef.current;
+      const container = navContainerRef.current;
+      const targetEl = itemRefs.current[activeTab];
+      if (!pill || !container || !targetEl) return;
+
+      // Never cancel or interrupt an in-flight caterpillar stretch
+      if (gsap.isTweening(pill)) return;
+
+      const containerRect = container.getBoundingClientRect();
+      const targetRect = targetEl.getBoundingClientRect();
+      const targetY = targetRect.top - containerRect.top;
+      const targetH = targetRect.height;
+
+      prevRectRef.current = { top: targetY, height: targetH };
+      gsap.set(pill, { y: targetY, height: targetH });
+    };
+
+    window.addEventListener('resize', updatePillStatic);
+    return () => window.removeEventListener('resize', updatePillStatic);
+  }, [activeTab, settings.fontSize]);
 
   let roleLabel = '';
   let roleBadgeClass = '';
@@ -161,9 +278,6 @@ export default function RightSidebar({
   const [isSettingsFlyoutOpen, setIsSettingsFlyoutOpen] = useState<boolean>(false);
   const settingsHoverTimer = useRef<NodeJS.Timeout | null>(null);
 
-  const [isFloatingFlyoutOpen, setIsFloatingFlyoutOpen] = useState<boolean>(false);
-  const floatingHoverTimer = useRef<NodeJS.Timeout | null>(null);
-
   const handleSettingsMouseEnter = () => {
     if (settingsHoverTimer.current) {
       clearTimeout(settingsHoverTimer.current);
@@ -173,29 +287,15 @@ export default function RightSidebar({
   };
 
   const handleSettingsMouseLeave = () => {
+    if (settingsHoverTimer.current) clearTimeout(settingsHoverTimer.current);
     settingsHoverTimer.current = setTimeout(() => {
       setIsSettingsFlyoutOpen(false);
-    }, 450);
-  };
-
-  const handleFloatingMouseEnter = () => {
-    if (floatingHoverTimer.current) {
-      clearTimeout(floatingHoverTimer.current);
-      floatingHoverTimer.current = null;
-    }
-    setIsFloatingFlyoutOpen(true);
-  };
-
-  const handleFloatingMouseLeave = () => {
-    floatingHoverTimer.current = setTimeout(() => {
-      setIsFloatingFlyoutOpen(false);
-    }, 450);
+    }, 150);
   };
 
   useEffect(() => {
     return () => {
       if (settingsHoverTimer.current) clearTimeout(settingsHoverTimer.current);
-      if (floatingHoverTimer.current) clearTimeout(floatingHoverTimer.current);
     };
   }, []);
 
@@ -203,8 +303,6 @@ export default function RightSidebar({
     setActiveTab('settings');
     onSelectSettingsSection?.(secId);
     setIsSettingsFlyoutOpen(false);
-    setIsFloatingFlyoutOpen(false);
-    if (!isPinned) setIsHovered(false);
     if (onCloseMobile) onCloseMobile();
     setTimeout(() => {
       const el = document.getElementById(`settings-section-${secId}`);
@@ -218,8 +316,6 @@ export default function RightSidebar({
     setActiveTab('settings');
     onSelectSettingsSection?.('all');
     setIsSettingsFlyoutOpen(false);
-    setIsFloatingFlyoutOpen(false);
-    if (!isPinned) setIsHovered(false);
     if (onCloseMobile) onCloseMobile();
     setTimeout(() => {
       const mainEl = document.querySelector('main');
@@ -290,42 +386,11 @@ export default function RightSidebar({
     }
   ];
 
-  // Interactive Hovering & Pinning logic
-  const [isPinned, setIsPinned] = useState<boolean>(() => {
-    const saved = localStorage.getItem('sidebar_pinned');
-    return saved !== null ? saved === 'true' : true; 
-  });
-  const [isHovered, setIsHovered] = useState<boolean>(false);
-  const hoverTimeout = useRef<NodeJS.Timeout | null>(null);
-
-  const handleMouseEnter = () => {
-    if (hoverTimeout.current) {
-      clearTimeout(hoverTimeout.current);
-      hoverTimeout.current = null;
-    }
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    if (isPinned) return;
-    hoverTimeout.current = setTimeout(() => {
-      setIsHovered(false);
-    }, 350);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (hoverTimeout.current) clearTimeout(hoverTimeout.current);
-    };
-  }, []);
-
-  const isDrawerOpen = isOpenMobile || isPinned || isHovered;
-
   const renderFlyoutMenu = (onMouseEnter: () => void, onMouseLeave: () => void) => (
     <div
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
-      className={`absolute bottom-full mb-2 ${isEn ? 'left-0' : 'right-0'} flex flex-col gap-1.5 z-50 w-64 p-2 rounded-2xl bg-slate-950/80 backdrop-blur-2xl border border-white/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] before:absolute before:inset-x-0 before:-bottom-4 before:h-6 before:content-['']`}
+      className={`absolute bottom-full mb-2 ${isEn ? 'left-0' : 'right-0'} flex flex-col gap-1.5 z-50 w-64 max-h-[75vh] overflow-y-auto p-2 rounded-2xl bg-slate-950/90 backdrop-blur-2xl backdrop-saturate-150 border border-white/[0.15] shadow-[0_20px_50px_rgba(0,0,0,0.6),inset_0_1px_1px_rgba(255,255,255,0.22)] before:absolute before:-inset-3 before:content-[''] before:-z-10 settings-popover-animated transform-gpu`}
       dir={isEn ? 'ltr' : 'rtl'}
     >
       {flyoutItems.map((item) => {
@@ -337,7 +402,6 @@ export default function RightSidebar({
             onClick={() => {
               item.onClick();
               setIsSettingsFlyoutOpen(false);
-              setIsFloatingFlyoutOpen(false);
             }}
             className={`w-full group/item flex items-center gap-2.5 p-2.5 rounded-xl cursor-pointer transition-colors duration-200 ${
               item.isLogout 
@@ -360,145 +424,110 @@ export default function RightSidebar({
     </div>
   );
 
+  const mobileTranslateClass = isOpenMobile
+    ? 'max-md:translate-x-0 max-md:opacity-100 max-md:pointer-events-auto'
+    : isEn
+      ? 'max-md:-translate-x-[130%] max-md:opacity-0 max-md:pointer-events-none'
+      : 'max-md:translate-x-[130%] max-md:opacity-0 max-md:pointer-events-none';
+
   return (
     <>
-      {/* Spacer zone: reserves 250px on desktop when pinned */}
+      {/* Spacer zone: reserves 256px on desktop when expanded, 68px when collapsed */}
       <div 
-        className={`hidden md:block transition-all duration-300 shrink-0 no-print ${
-          isPinned ? 'w-[250px]' : 'w-0'
+        className={`hidden md:block transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] shrink-0 no-print ${
+          effectiveExpanded ? 'w-[256px]' : 'w-[68px]'
         }`}
       />
 
-      {/* Edge hover trigger area for sliding out the sidebar when unpinned */}
-      {!isPinned && !isFloatingFlyoutOpen && (
-        <div
-          onMouseEnter={handleMouseEnter}
-          className={`hidden md:block fixed top-0 bottom-24 ${isEn ? 'left-0' : 'right-0'} w-5 z-30 cursor-pointer group/edge`}
-          title={lang === 'en' ? 'Slide to open menu' : lang === 'ar' ? 'تمرير لفتح القائمة' : 'بۆ کردنەوەی مێنۆ'}
-        >
-          <div className={`absolute top-1/2 -translate-y-1/2 ${isEn ? 'left-1' : 'right-1'} w-1 h-14 rounded-full bg-[#1D7AFC]/30 group-hover/edge:bg-[#1D7AFC]/70 group-hover/edge:h-20 transition-all duration-300 ease-out`} />
-        </div>
-      )}
-
-      {/* Floating Settings & Theme button when menu is closed */}
-      {!isPinned && (
-        <div 
-          className={`hidden md:flex flex-col gap-2.5 items-center fixed bottom-5 ${isEn ? 'left-5' : 'right-5'} z-40 transition-all duration-300 ease-out ${
-            !isHovered || isFloatingFlyoutOpen
-              ? 'opacity-100 translate-y-0 pointer-events-auto' 
-              : 'opacity-0 translate-y-3 pointer-events-none'
-          }`}
-        >
-          <div
-            className="relative"
-            onMouseEnter={handleFloatingMouseEnter}
-            onMouseLeave={handleFloatingMouseLeave}
-          >
-            {isFloatingFlyoutOpen && renderFlyoutMenu(handleFloatingMouseEnter, handleFloatingMouseLeave)}
-
-            <button
-              type="button"
-              onClick={handleSettingsMainClick}
-              title={t.settings_title || 'ڕێکخستنەکان'}
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ease-out cursor-pointer backdrop-blur-xl border border-white/[0.15] shadow-[0_10px_30px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] ${
-                activeTab === 'settings'
-                  ? 'bg-[#1D7AFC] text-white shadow-[0_4px_20px_rgba(29,122,252,0.5)] scale-105'
-                  : 'bg-slate-950/60 text-slate-300 hover:text-white hover:bg-slate-900/80 hover:scale-105'
-              }`}
-            >
-              <Settings className={`w-4 h-4 transition-transform duration-300 ${activeTab === 'settings' ? 'rotate-90 text-white' : 'hover:rotate-45'}`} />
-            </button>
-          </div>
-
-          {onThemeModeChange && (
-            <button
-              type="button"
-              onClick={() => {
-                const nextMode = (settings.themeMode === 'midnight' || settings.themeMode === 'dark') ? 'sky_light' : 'midnight';
-                onThemeModeChange(nextMode);
-              }}
-              className="w-11 h-11 rounded-2xl flex items-center justify-center transition-all duration-300 ease-out cursor-pointer backdrop-blur-xl bg-slate-950/60 border border-white/[0.15] text-slate-300 hover:text-white hover:bg-slate-900/80 hover:scale-105 shadow-[0_10px_30px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]"
-            >
-              {(settings.themeMode === 'midnight' || settings.themeMode === 'dark') ? (
-                <Sun className="w-4 h-4 text-amber-400 hover:rotate-45 transition-transform duration-300" />
-              ) : (
-                <Moon className="w-4 h-4 text-cyan-300 hover:-rotate-12 transition-transform duration-300" />
-              )}
-            </button>
-          )}
-        </div>
-      )}
-
       {/* Main Glass Sidebar Drawer */}
       <aside 
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        className={`fixed top-3 bottom-3 ${isEn ? 'left-3' : 'right-3'} z-50 md:z-45 w-[250px] flex flex-col rounded-2xl bg-slate-950/35 backdrop-blur-2xl backdrop-saturate-150 border border-white/[0.12] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22),inset_0_0_24px_rgba(255,255,255,0.03),0_20px_50px_rgba(0,0,0,0.45)] no-print transition-all duration-300 ease-out overflow-hidden ${
-          isDrawerOpen 
-            ? 'opacity-100 translate-x-0 pointer-events-auto' 
-            : isEn ? '-translate-x-[280px] opacity-0 pointer-events-none' : 'translate-x-[280px] opacity-0 pointer-events-none'
-        }`}
+        ref={sidebarRef}
+        style={{ width: effectiveExpanded ? 256 : 68 }}
+        className={`fixed top-3 bottom-3 ${isEn ? 'left-3' : 'right-3'} z-50 md:z-45 flex flex-col rounded-2xl bg-slate-950/40 backdrop-blur-2xl backdrop-saturate-150 border border-white/[0.12] shadow-[inset_0_1px_1px_0_rgba(255,255,255,0.22),inset_0_0_24px_rgba(255,255,255,0.03),0_20px_50px_rgba(0,0,0,0.45)] no-print transform-gpu overflow-hidden transition-[transform,opacity] duration-300 md:transition-none ${mobileTranslateClass}`}
       >
         {/* Specular Inner Glint line */}
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/35 to-transparent pointer-events-none z-30" />
 
-        {/* Header containing brand and pin lock */}
-        <div className="py-4 px-4 border-b border-white/[0.08] flex items-center justify-between relative z-10 shrink-0">
-          <div className="flex items-center gap-2.5 min-w-0">
-            {settings.officeLogo ? (
-              <div className="w-8 h-8 rounded-xl overflow-hidden shrink-0 flex items-center justify-center border border-white/[0.1] bg-white/[0.05]">
-                <img src={settings.officeLogo} alt="Logo" className="w-full h-full object-contain" />
+        {/* 1. Top Brand Header: Stationary 44px Icon Slot + Folding Text / Collapse Button */}
+        <div className="px-[12px] py-[12px] flex items-center gap-[8px] border-b border-white/[0.08] relative z-10 shrink-0">
+          {/* Fixed 44px x 44px Icon Slot (Always at exactly 12px from edge) */}
+          <div className="w-[44px] h-[44px] min-w-[44px] shrink-0 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={!effectiveExpanded ? toggleSidebar : undefined}
+              onMouseEnter={() => setIsLogoHovered(true)}
+              onMouseLeave={() => setIsLogoHovered(false)}
+              title={!effectiveExpanded ? (lang === 'en' ? 'Open sidebar' : lang === 'ar' ? 'توسيع القائمة' : 'کردنەوەی مێنۆ') : undefined}
+              className={`w-[38px] h-[38px] rounded-[12px] border border-white/[0.1] bg-white/[0.05] flex items-center justify-center overflow-hidden relative shadow-[0_0_15px_rgba(29,122,252,0.2)] ${
+                !effectiveExpanded ? 'cursor-pointer hover:border-[#1D7AFC]/50 hover:bg-[#1D7AFC]/15 transition-all' : 'cursor-default'
+              }`}
+            >
+              {/* Normal Logo */}
+              <div className={`absolute inset-0 flex items-center justify-center transition-all duration-300 ${
+                !effectiveExpanded && isLogoHovered ? 'opacity-0 scale-75 rotate-12' : 'opacity-100 scale-100 rotate-0'
+              }`}>
+                {settings.officeLogo ? (
+                  <img src={settings.officeLogo} alt="Logo" className="w-full h-full object-contain p-1" />
+                ) : (
+                  <Vault size={18} className="text-[#1D7AFC]" />
+                )}
               </div>
-            ) : (
-              <div className="w-8 h-8 rounded-xl shrink-0 flex items-center justify-center border border-[#1D7AFC]/30 bg-[#1D7AFC]/15 text-[#1D7AFC] shadow-[0_0_15px_rgba(29,122,252,0.3)]">
-                <Vault className="w-4 h-4" />
-              </div>
-            )}
-            <div className="min-w-0">
+
+              {/* Open Sidebar icon on hover when collapsed */}
+              {!effectiveExpanded && (
+                <div className={`absolute inset-0 flex items-center justify-center bg-[#1D7AFC]/30 transition-all duration-300 ${
+                  isLogoHovered ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-75 -rotate-12'
+                }`}>
+                  {isEn ? (
+                    <PanelLeftOpen size={18} className="text-white animate-pulse" />
+                  ) : (
+                    <PanelRightOpen size={18} className="text-white animate-pulse" />
+                  )}
+                </div>
+              )}
+            </button>
+          </div>
+
+          {/* Folding Text Wrap (Brand Title + Collapse Toggle) */}
+          <div className="sidebar-text-wrap flex-1 flex items-center justify-between min-w-0 overflow-hidden whitespace-nowrap">
+            <div className="min-w-0 flex-1">
               <h1 className="text-sm font-bold text-white tracking-tight truncate">
                 {settings.officeName || t.settings_title}
               </h1>
               <p className="text-[10px] text-slate-400 truncate mt-0.5">{t.system_monitoring}</p>
             </div>
-          </div>
 
-          <div className="flex items-center gap-1.5 shrink-0">
-            {/* Desktop Pin Lock */}
             <button
-              onClick={() => {
-                const nextPin = !isPinned;
-                setIsPinned(nextPin);
-                localStorage.setItem('sidebar_pinned', String(nextPin));
-                if (nextPin) setIsHovered(false);
-              }}
-              title={isPinned ? 'Unpin menu' : 'Pin menu'}
-              className={`hidden md:inline-flex p-1.5 rounded-lg transition-all duration-200 border cursor-pointer ${
-                isPinned 
-                  ? 'bg-[#1D7AFC]/20 text-[#60A5FA] border-[#1D7AFC]/30 shadow-[0_0_10px_rgba(29,122,252,0.25)]' 
-                  : 'bg-white/[0.05] text-slate-400 border-white/[0.1] hover:text-white hover:bg-white/[0.1]'
-              }`}
+              type="button"
+              onClick={toggleSidebar}
+              title={lang === 'en' ? 'Collapse sidebar' : lang === 'ar' ? 'طي الشريط الجانبي' : 'شاردنەوەی سایدبار'}
+              className="w-[32px] h-[32px] rounded-[8px] bg-white/[0.05] hover:bg-white/[0.12] border border-white/[0.1] flex items-center justify-center text-slate-300 hover:text-white transition-all cursor-pointer shrink-0 ms-[8px] active:scale-95"
             >
-              {isPinned ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+              {isEn ? <PanelLeftClose size={16} /> : <PanelRightClose size={16} />}
             </button>
-
-            {onCloseMobile && (
-              <button 
-                onClick={onCloseMobile}
-                className="md:hidden p-1.5 rounded-lg bg-white/[0.05] border border-white/[0.1] text-slate-400 hover:text-white transition-colors cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
           </div>
+
+          {/* Mobile Close Button */}
+          {onCloseMobile && (
+            <button 
+              onClick={onCloseMobile}
+              className="md:hidden p-2 rounded-xl bg-white/[0.05] border border-white/[0.1] text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <X size={16} />
+            </button>
+          )}
         </div>
 
-        {/* Navigation list with GSAP Liquid Sliding Pill */}
-        <div className="flex-1 p-2.5 overflow-y-auto relative z-10 scrollbar-none">
-          <div ref={navContainerRef} className="relative flex flex-col gap-1">
-            {/* The single floating liquid GSAP pill */}
+        {/* 2. Navigation List: Fixed 44px Icon Slots + Folding Labels + Synchronous Liquid Pill */}
+        <div className="flex-1 w-full overflow-y-auto relative z-10 scrollbar-none py-[8px]">
+          <div 
+            ref={navContainerRef} 
+            className="relative w-full flex flex-col gap-[6px] px-[12px]"
+          >
+            {/* The single floating liquid GSAP pill (exact 44px when collapsed, 232px when expanded) */}
             <div 
               ref={activePillRef} 
-              className="absolute left-0 right-0 rounded-xl bg-[#1D7AFC] shadow-[0_4px_20px_rgba(29,122,252,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] pointer-events-none z-0" 
+              className="absolute top-0 left-[12px] right-[12px] rounded-[12px] bg-[#1D7AFC] shadow-[0_4px_20px_rgba(29,122,252,0.45),inset_0_1px_0_rgba(255,255,255,0.35)] pointer-events-none z-0" 
             />
 
             {menuItems.map((item) => {
@@ -514,59 +543,77 @@ export default function RightSidebar({
                   }}
                   onClick={() => {
                     setActiveTab(item.id);
-                    if (!isPinned) setIsHovered(false);
                   }}
-                  className={`w-full relative z-10 flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-colors duration-200 select-none ${
-                    isEn ? 'text-left' : 'text-right'
-                  } ${
+                  title={!effectiveExpanded ? item.label : undefined}
+                  className={`w-full h-[44px] flex items-center rounded-[12px] cursor-pointer select-none transition-colors duration-200 relative z-10 ${
                     isActive 
                       ? 'text-white font-semibold' 
                       : 'text-slate-300 hover:text-white hover:bg-white/[0.05]'
                   }`}
                 >
-                  <Icon className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
-                    isActive ? 'text-white scale-110' : 'text-slate-400'
-                  }`} />
-                  <span className="flex-1 text-xs tracking-wide truncate">
-                    {item.label}
-                  </span>
-                  {isActive && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-white shrink-0 shadow-[0_0_8px_white]" />
-                  )}
+                  {/* Fixed Non-Shrinking 44px Icon Slot */}
+                  <div className="w-[44px] h-[44px] min-w-[44px] shrink-0 flex items-center justify-center">
+                    <Icon size={18} className={`transition-transform duration-200 ${
+                      isActive ? 'text-white scale-110' : 'text-slate-400'
+                    }`} />
+                  </div>
+
+                  {/* Folding Label Wrap */}
+                  <div className={`sidebar-text-wrap flex-1 flex items-center justify-between min-w-0 overflow-hidden whitespace-nowrap pe-[8px] ${isEn ? 'text-left' : 'text-right'}`}>
+                    <span className="text-xs font-medium tracking-wide truncate">
+                      {item.label}
+                    </span>
+
+                    {isActive && (
+                      <div className="w-1.5 h-1.5 rounded-full bg-white shrink-0 shadow-[0_0_8px_white] ms-2" />
+                    )}
+                  </div>
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Footer profile & settings action bar */}
-        <div className="p-3 border-t border-white/[0.08] bg-slate-950/40 relative z-10 shrink-0">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
+        {/* 3. Bottom Profile & Settings: Stationary 44px Avatar Slot + Folding Controls */}
+        <div className="px-[12px] py-[12px] flex items-center gap-[8px] border-t border-white/[0.08] bg-slate-950/40 relative z-20 shrink-0 rounded-b-2xl overflow-visible">
+          {/* Fixed 44px x 44px Avatar Slot (Always at exactly 12px from edge) */}
+          <div className="w-[44px] h-[44px] min-w-[44px] shrink-0 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={!effectiveExpanded ? toggleSidebar : undefined}
+              title={!effectiveExpanded ? (currentUser?.name || 'User') : undefined}
+              className={`w-[38px] h-[38px] rounded-[12px] text-[15px] border border-white/[0.15] bg-[#1D7AFC]/20 text-[#60A5FA] font-bold shadow-[0_0_12px_rgba(29,122,252,0.25)] flex items-center justify-center overflow-hidden ${
+                !effectiveExpanded ? 'cursor-pointer hover:scale-105 transition-transform' : 'cursor-default'
+              }`}
+            >
               {currentUser && 'avatar' in currentUser && currentUser.avatar ? (
                 <img 
                   src={currentUser.avatar} 
                   alt={currentUser.name} 
-                  className="w-8 h-8 rounded-full object-cover shrink-0 border border-white/[0.15]" 
+                  className="w-full h-full object-cover" 
                 />
               ) : (
-                <div className="w-8 h-8 rounded-xl bg-[#1D7AFC]/20 border border-[#1D7AFC]/30 flex items-center justify-center shrink-0 text-[#60A5FA] font-bold text-xs shadow-[0_0_12px_rgba(29,122,252,0.25)]">
-                  {currentUser?.name ? currentUser.name.charAt(0) : 'K'}
-                </div>
+                <span className="font-mono">
+                  {currentUser?.name ? currentUser.name.charAt(0) : 'خ'}
+                </span>
               )}
-              <div className={`min-w-0 flex-1 ${isEn ? 'text-left' : 'text-right'}`}>
-                <h2 className="text-xs font-semibold text-white truncate">
-                  {currentUser?.name}
-                </h2>
-                <div className="flex items-center gap-1 mt-0.5 justify-start">
-                  <span className={`inline-block px-1.5 py-0.2 rounded-full text-[9px] font-medium tracking-wide ${roleBadgeClass}`}>
-                    {roleLabel}
-                  </span>
-                </div>
+            </button>
+          </div>
+
+          {/* Folding User Info & Action Controls */}
+          <div className="sidebar-text-wrap flex-1 flex items-center justify-between min-w-0 overflow-hidden whitespace-nowrap">
+            <div className={`min-w-0 flex-1 ${isEn ? 'text-left' : 'text-right'}`}>
+              <h2 className="text-xs font-semibold text-white truncate">
+                {currentUser?.name}
+              </h2>
+              <div className="flex items-center gap-1 mt-0.5 justify-start">
+                <span className={`inline-block px-1.5 py-0.2 rounded-full text-[9px] font-medium tracking-wide ${roleBadgeClass}`}>
+                  {roleLabel}
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-1 shrink-0">
+            <div className="flex items-center gap-[4px] shrink-0 ms-[8px]">
               {/* Theme Mode Toggle (Sun / Moon) */}
               {onThemeModeChange && (
                 <button
@@ -575,13 +622,13 @@ export default function RightSidebar({
                     const nextMode = (settings.themeMode === 'midnight' || settings.themeMode === 'dark') ? 'sky_light' : 'midnight';
                     onThemeModeChange(nextMode);
                   }}
-                  className="w-8 h-8 rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 bg-white/[0.05] border border-white/[0.1] text-slate-300 hover:text-white hover:bg-white/[0.1]"
+                  className="w-[32px] h-[32px] rounded-[8px] transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 bg-white/[0.05] border border-white/[0.1] text-slate-300 hover:text-white hover:bg-white/[0.1]"
                   title="Toggle Theme"
                 >
                   {(settings.themeMode === 'midnight' || settings.themeMode === 'dark') ? (
-                    <Sun className="w-3.5 h-3.5 text-amber-400" />
+                    <Sun size={14} className="text-amber-400" />
                   ) : (
-                    <Moon className="w-3.5 h-3.5 text-cyan-300" />
+                    <Moon size={14} className="text-cyan-300" />
                   )}
                 </button>
               )}
@@ -598,13 +645,13 @@ export default function RightSidebar({
                   type="button"
                   onClick={handleSettingsMainClick}
                   title={t.settings_title || 'ڕێکخستنەکان'}
-                  className={`w-8 h-8 rounded-lg transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 border ${
+                  className={`w-[32px] h-[32px] rounded-[8px] transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 border ${
                     activeTab === 'settings'
                       ? 'bg-[#1D7AFC] text-white border-[#1D7AFC] shadow-[0_0_12px_rgba(29,122,252,0.4)]'
                       : 'bg-white/[0.05] border-white/[0.1] text-slate-300 hover:text-white hover:bg-white/[0.1]'
                   }`}
                 >
-                  <Settings className={`w-3.5 h-3.5 transition-transform duration-300 ${activeTab === 'settings' ? 'rotate-90 text-white' : ''}`} />
+                  <Settings size={14} className={`transition-transform duration-300 ${activeTab === 'settings' ? 'rotate-90 text-white' : ''}`} />
                 </button>
               </div>
             </div>
